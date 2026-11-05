@@ -2,6 +2,8 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
+const csv = require('csv-parser');
+const {Readable} = require('stream'); // módulo nativo do node
 
 // inicialização do app
 const app = express();
@@ -13,6 +15,19 @@ app.use(express.json()); // ensina a API a ler e responder objs no formato JSON
 
 // configurando o multer pra guardar os arquivos na mémoria ram 
 const upload = multer({ storage: multer.memoryStorage() });
+
+// função pra transformar o buffer da memória em array de objs JS
+const lerCSV = (buffer) => {
+   return new Promise((resolve, reject) => {
+      const resultados = [];
+      const stream = Readable.from(buffer); // transforma a memória num fluxo de dados
+
+      stream.pipe(csv()) // passa os dados pelo tradutor CSV 
+      .on('data', (linha) => resultados.push(linha)) // a cada linha lida, guarda no array
+      .on('end', () => resolve(resultados)) // quando terminar, devolve o array
+      .on('error', (erro) => reject(erro)); // se der erro avisa
+   });
+}
 
 // rota de teste 
 app.get('/', (req, res) => {
@@ -27,7 +42,7 @@ app.get('/', (req, res) => {
 app.post('/api/reconciliacao', upload.fields([
    { name: 'vendas', maxCount: 1 },
    { name: 'extrato', maxCount: 1 }
-]), (req, res) => {
+]), async (req, res) => {
 
    // validação de segurança: o usuário mandou os dois arquivos???
    if (!req.files || !req.files.vendas || !req.files.extrato) {
@@ -36,16 +51,27 @@ app.post('/api/reconciliacao', upload.fields([
       });
    }
 
-   // se passou pela validação, capturamos os arquivos da memória
-   const arquivoVendas = req.files.vendas[0];
-   const arquivoExtrato = req.files.extrato[0];
+   try {
+      //pegar os buffers 
+      const vendasBuffer = req.files.vendas[0].buffer;
+      const extratoBuffer = req.files.extrato[0].buffer;
 
-   // resposta temporária só pra provar que os arquivos chegaram 
-   res.status(200).json({
-      msg: 'Arquivos recebidos com sucesso na memória!',
-      vendasInfo: { nome: arquivoVendas.originalname, tamanhoBytes: arquivoVendas.size },
-      extratoInfo: { nome: arquivoExtrato.originalname, tamanhoBytes: arquivoExtrato.size }
-   });
+      // mandar pra função ler e esperar await o resultado
+      const arrayVendas = await lerCSV(vendasBuffer);
+      const arrayExtrato = await lerCSV(extratoBuffer);
+
+      // devolver os dados reais pra provar que funcionou 
+      res.status(200).json({
+         msg: 'CVSs convertidos com sucesso!',
+         totalVendas: arrayVendas.length,
+         totalExtrato: arrayExtrato.length,
+         amostraVendas: arrayVendas[0], // mostra a primeira linha de vendas
+         amostraExtrato: arrayExtrato[0] // mostra primeira linha de extrato
+      });   
+   } catch (erro) {
+      console.error(erro);
+      res.status(500).json({erro: 'Falha ao processar a leitura dos arquivos CSV.'})
+   }
 });
 
 // ligando o motor
