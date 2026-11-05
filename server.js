@@ -4,6 +4,8 @@ const cors = require('cors');
 const multer = require('multer');
 const csv = require('csv-parser');
 const {Readable} = require('stream'); // módulo nativo do node
+const db = require('./src/config/db');
+const {inserirVendas, inserirExtrato} = require('./src/services/dbService');
 
 // inicialização do app
 const app = express();
@@ -60,13 +62,17 @@ app.post('/api/reconciliacao', upload.fields([
       const arrayVendas = await lerCSV(vendasBuffer);
       const arrayExtrato = await lerCSV(extratoBuffer);
 
-      // devolver os dados reais pra provar que funcionou 
+      // dispara as duas gravações ao mesmo tempo no mySQL
+      await Promise.all([
+         inserirVendas(arrayVendas),
+         inserirExtrato(arrayExtrato)
+      ]);
+
+      // confirmando gravação
       res.status(200).json({
-         msg: 'CVSs convertidos com sucesso!',
+         msg: 'Arquivos processados e salvos no banco de dados com sucesso!',
          totalVendas: arrayVendas.length,
          totalExtrato: arrayExtrato.length,
-         amostraVendas: arrayVendas[0], // mostra a primeira linha de vendas
-         amostraExtrato: arrayExtrato[0] // mostra primeira linha de extrato
       });   
    } catch (erro) {
       console.error(erro);
