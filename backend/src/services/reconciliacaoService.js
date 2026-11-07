@@ -1,5 +1,5 @@
 // importando a conexão com o banco de dados
-const db = require('../config/db');
+const db = require('src/config/db');
 
 // cria a funçao principal do motor
 const executarReconciliacao = async () => {
