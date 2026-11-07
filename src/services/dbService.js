@@ -32,4 +32,20 @@ const inserirExtrato = async (arrayExtrato) => {
    await db.query(query, [valores]);
 };
 
-module.exports = {inserirVendas, inserirExtrato}
+const inserirResultados = async (arrayResultados) => {
+   if (arrayResultados === 0) return;
+
+   // transforma a lista de objs em uma matriz pra o mySQL
+   const valores = arrayResultados.map(resultado => [
+      resultado.id_venda,
+      resultado.id_extrato,
+      resultado.tipo_resultado,
+      resultado.valor_diferenca
+   ]);
+
+   const query = 'INSERT INTO resultado_reconciliacao (id_venda, id_extrato, tipo_resultado, valor_diferenca) VALUES ?';
+
+   await db.query(query, [valores]);
+};
+
+module.exports = { inserirVendas, inserirExtrato, inserirResultados };

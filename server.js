@@ -5,7 +5,8 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const {Readable} = require('stream'); // módulo nativo do node
 const db = require('./src/config/db');
-const {inserirVendas, inserirExtrato} = require('./src/services/dbService');
+const {inserirVendas, inserirExtrato, inserirResultados} = require('./src/services/dbService');
+const { executarReconciliacao } = require('./src/services/reconciliacaoService');
 
 // inicialização do app
 const app = express();
@@ -77,6 +78,35 @@ app.post('/api/reconciliacao', upload.fields([
    } catch (erro) {
       console.error(erro);
       res.status(500).json({erro: 'Falha ao processar a leitura dos arquivos CSV.'})
+   }
+});
+
+// rota POST: pra disparar o cruzamento de dados
+app.post('/api/executar-reconciliacao', async (req, res) => {
+   try {
+      const resultadosProntos = await executarReconciliacao(); 
+
+      if (!resultadosProntos || resultadosProntos.length === 0) {
+         return res.status(400).json({ erro: 'Nenhum dado encontrado para cruzar.'}); // pra ter certeza que o resultadosProntos tem algo pra adicionar no inserirResultado
+      }
+
+      // mandando os resultados pro banco de dados
+      await inserirResultados(resultadosProntos);
+
+
+      const itensDivergentes = resultadosProntos.filter(item => item.tipo_resultado !== 'MATCH_PERFEITO')
+
+      res.status(200).json({
+         msg: 'Reconciliação executada com sucesso!',
+         totalCruzamentos: resultadosProntos.length,
+         amostraCruzamento: resultadosProntos[0],
+         totalDivergencias: itensDivergentes.length,
+         divergencias: itensDivergentes
+      });
+
+   } catch (erro) {
+      console.error(erro);
+      res.status(500).json({ erro: 'Falha ao executar motor de reconciliação.'});
    }
 });
 
