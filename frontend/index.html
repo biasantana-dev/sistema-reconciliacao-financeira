@@ -1,12 +1,205 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Reconciliação Financeira</title>
    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-   
+   <div class="container-dashboard">
+
+      <!-- barra lateral-->
+      <aside class="sidebar">
+
+         <img src="#" alt="Logo">
+
+         <div class="nav-sidebar">
+            <a href="#"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24
+" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-upload preview-icon">
+                  <path d="M12 3v12" />
+                  <path d="m17 8-5-5-5 5" />
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+               </svg> UpLoad</a>
+
+            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-layout-dashboard preview-icon">
+                  <rect width="7" height="9" x="3" y="3" rx="1" />
+                  <rect width="7" height="5" x="14" y="3" rx="1" />
+                  <rect width="7" height="9" x="14" y="12" rx="1" />
+                  <rect width="7" height="5" x="3" y="16" rx="1" />
+               </svg> Dashboard</a>
+
+            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-rotate-ccw-clock preview-icon">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M12 7v5l4 2" />
+               </svg> Histórico</a>
+
+            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-file-chart-column preview-icon">
+                  <path
+                     d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                  <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                  <path d="M8 18v-1" />
+                  <path d="M12 18v-6" />
+                  <path d="M16 18v-3" />
+               </svg> Relatórios</a>
+
+         </div>
+
+         <div class="sidebar-usuario">
+            <img src="img/user.png" alt="Usuário"> <!-- avatar usuário-->
+            <div class="login-usuario-sidebar">
+               <p class="nome-usuario-sidebar"> Beatriz Santana</p>
+               <p class="arroba-usuario-sidebar">@biasantana-dev</p>
+            </div>
+      </aside>
+
+      <!-- conteudo principal -->
+      <main class="main-conteudo">
+         <h1>Reconciliação de Arquivos</h1>
+         <p>Envie os arquivos para cruzamento automático.</p>
+
+         <!-- formulário com os dois cards de upload -->
+         <form id="formReconciliacao">
+            <!-- barra de progresso -->
+            <div class="stepper-container">
+               <div class="step active">1. Upload de Arquivos</div>
+               <div class="step">2. Cruzamento de Dados</div>
+               <div class="step">3. Resultados e Match</div>
+            </div>
+
+            <div class="upload-box">
+               <div class="upload-vendas">
+                  <label for="input-vendas">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="file-icon-topo" id="icon-vendas">
+                        <path
+                           d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                        <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                        <path d="M8 13h2" />
+                        <path d="M14 13h2" />
+                        <path d="M8 17h2" />
+                        <path d="M14 17h2" />
+                     </svg>
+
+                     <!--****** VENDAS ******** -->
+                     <h2>Upload de Vendas</h2>
+                     <p class="descricao">Arraste e solte o arquivo de Vendas aqui ou clique para carregar</p>
+                     <input type="file" name="vendas" id="input-vendas" accept=".csv">
+
+                     <div class="file-status" id="status-vendas">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                           class="file-icon-mini">
+                           <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                           <polyline points="14 2 14 8 20 8" />
+                        </svg>
+
+                        <div class="file-details">
+                           <span class="file-name" id="nome-arq-vendas">Nenhum arquivo</span>
+                           <span class="file-size" id="tam-arq-vendas">-</span>
+                        </div>
+
+                        <div class="file-check">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                              stroke-linejoin="round">
+                              <path d="M20 6 9 17l-5-5" />
+                           </svg>
+                        </div>
+                     </div>
+
+                     <p class="alerta-card">Apenas arquivos .csv</p>
+                  </label>
+               </div>
+
+
+               <!--****** EXTRATO ******** -->
+               <div class="upload-extrato">
+                  <label for="input-extrato">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="file-icon-topo" id="icon-extrato">
+                        <path d="M10 18v-7" />
+                        <path
+                           d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z" />
+                        <path d="M14 18v-7" />
+                        <path d="M18 18v-7" />
+                        <path d="M3 22h18" />
+                        <path d="M6 18v-7" />
+                     </svg>
+
+                     <h2>Upload de Extrato</h2>
+                     <p class="descricao">Arraste e solte o arquivo de Extrato aqui ou clique para carregar</p>
+
+                     <input type="file" name="extrato" id="input-extrato" accept=".csv">
+
+                     <div class="file-status" id="status-extrato">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                           class="file-icon-mini">
+                           <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                           <polyline points="14 2 14 8 20 8" />
+                        </svg>
+
+                        <div class="file-details">
+                           <span class="file-name" id="nome-arq-extrato">Nenhum arquivo</span>
+                           <span class="file-size" id="tam-arq-extrato">-</span>
+                        </div>
+
+                        <div class="file-check">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                              stroke-linejoin="round">
+                              <path d="M20 6 9 17l-5-5" />
+                           </svg>
+                        </div>
+
+                     </div>
+
+                     <p class="alerta-card">Apenas arquivos .csv</p>
+                  </label>
+               </div>
+            </div>
+
+            <div class="form-footer">
+
+               <div class="requisitos-validacao">
+                  <p>Requisitos de validação:</p>
+                  <ul>
+
+                     <li id="req-formato"><span class="icone-check">✓</span> formato .csv</li>
+                     <li id="req-colunas"><span class="icone-check">✓</span> colunas obrigatórias detectadas</li>
+                  </ul>
+               </div>
+
+               <button type="submit" class="btn-executar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="lucide lucide-database-zap">
+                     <ellipse cx="12" cy="5" rx="9" ry="3" />
+                     <path d="M3 5V19A9 3 0 0 0 15 21.84" />
+                     <path d="M21 5V8" />
+                     <path d="M21 12L18 17H22L19 22" />
+                  </svg>
+                  Executar Reconciliação</button>
+            </div>
+         </form>
+      </main>
+   </div>
+
+
+   <script src="app.js"></script>
 </body>
+
 </html>
