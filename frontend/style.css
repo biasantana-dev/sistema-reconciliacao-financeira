@@ -10,11 +10,12 @@
    --cor-secundaria: #232832;
    --cor-destaque: #434e62;
    --cor-texto: #E2E8F0;
-   --cor-btn: #38bff8b0;
    --cor-card1: #6971AE; /*#323A5F*/
    --cor-card2: #67C38A; /*#2D4B43*/
    --cor-border:#7b7b7c2f;
    --cor-texto-secundaria: #c6c6c6;
+   --cor-acao: #0284C7;
+   --cor-acao-hover: #0369A1;
 }
 
 body {
@@ -37,11 +38,14 @@ body {
    display: flex;
    flex-direction: column;
    justify-content: space-between;
-   padding: 20px 35px;
+   padding: 15px 35px 34px;
 }
 
-.sidebar img {
-   margin-bottom: 30px;
+.sidebar-logo {
+   margin-bottom: 14px;
+   width: 206px;
+   height: auto;
+   display: block;
 }
 
 .nav-sidebar {
@@ -53,7 +57,7 @@ body {
 
 .nav-sidebar a {
    color: var(--cor-texto-secundaria);
-   font-size: 0.97em;
+   font-size: 0.93em;
    text-decoration: none;
    padding: 9px 16px;
    border-radius: 8px;
@@ -84,36 +88,39 @@ body {
 }
 
 .sidebar-usuario img {
-   margin-top: 32px;
-   width: 40px;
+   margin-top: 2px;
+   width: 38px;
 }
 
 .nome-usuario-sidebar {
-   font-size: 1em;
+   font-size: 0.95em;
    font-weight: 600;
    color: var(--cor-texto);
+   margin-bottom: 3px;
 }
 
 .arroba-usuario-sidebar {
-   font-size: 0.85em;
+   font-size: 0.8em;
    color: var(--cor-texto-secundaria);
 }
 
 /* conteudo principal */
 .main-conteudo  {
    flex-grow: 1;
-   padding: 32px 50px;
+   padding: 28px 50px 32px;
    overflow-y: auto;
 } 
 
 .main-conteudo h1 {
-   margin-bottom: 2px;
-   font-size: 1.9em;
+   font-size: 1.85em;
+   letter-spacing: -0.5px;
+   font-weight: 700;
+   margin-bottom: 8px;
 }
 
 .main-conteudo > p {
    color: var(--cor-texto-secundaria);
-   margin-bottom: 30px;
+   margin-bottom: 45px;
    font-size: 1.05em;
 }
 
@@ -121,7 +128,7 @@ body {
 #formReconciliacao {
    background-color: var(--cor-secundaria);
    border-radius: 15px;
-   height: 550px;
+   height: 580px;
 }
 
 /* barra de progresso*/ 
@@ -131,6 +138,7 @@ body {
 }
 
 .step {
+   font-size: 0.9em;
    position: relative;
    text-align: center;
    padding: 15px 0px;
@@ -155,7 +163,7 @@ body {
 
 .step.active {
    color: var(--cor-texto);
-   border-bottom-color: #38bff8b0;
+   border-bottom-color: var(--cor-acao);
 }
 
 /* cards de upload */ 
@@ -163,7 +171,7 @@ body {
    display: grid;
    grid-template-columns: 1fr 1fr;
    gap: 40px;
-   margin-bottom: 32px;
+   margin-bottom: 30px;
    padding: 0 40px;
 }
 
@@ -180,9 +188,19 @@ body {
    border: 2px dashed var(--cor-card1);
 }
 
+.upload-vendas:hover {
+   border-color: #7b85cc;
+   background-color: #6971ae1c;
+}
+
 .upload-extrato {
    background-color: #67c38a11;
    border: 2px dashed var(--cor-card2);
+}
+
+.upload-extrato:hover {
+   border-color: #7ce8a5;
+   background-color: #67c38a1c;
 }
 
 /* faz o label se comportar como um bloco clicável inteiro*/
@@ -196,9 +214,10 @@ body {
 }
 
 .file-icon-topo {
-   width: 58px;
-   height: 58px;
-   margin-bottom: 16px;
+   width: 68px;
+   height: 68px;
+   margin-bottom: 24px;
+   stroke-width: 1.5;
 }
 
 #icon-vendas {
@@ -211,11 +230,11 @@ body {
 
 .upload-vendas h2, .upload-extrato h2 {
    color: var(--cor-texto);
-   font-size: 1.12em;
-   font-weight: 500;
-   margin-bottom: 8px;
-   border-radius: 18px;
-   padding: 5px 15px;
+   font-size:  0.95em;
+   margin-bottom: 16px;
+   border-radius: 20px;
+   padding: 6px 18px;
+   display: inline-block;
 }
 
 .upload-vendas h2 {
@@ -227,10 +246,13 @@ body {
 }
 
 .descricao {
-   font-size: 1.12em;
+   font-size: 0.9em;
+   line-height: 1.5;
    text-align: center;
-   width: 320px;
+   color: var(--cor-texto-secundaria);
+   width: 85%;
    opacity: 0.9;
+   margin: 7px auto;
 } 
 
 /* esconde o input nativo do navegador*/
@@ -241,16 +263,16 @@ input[type="file"] {
 .alerta-card {
    font-size: 0.86em;
    color: var(--cor-texto-secundaria);
-   margin: 10px auto 5px;
+   margin: 12px auto 5px;
    opacity: 0.8;
 }
 
 /* botao executar */
 .btn-executar {
-   background: linear-gradient(to right, #0ea5e9, #8b5cf6);
+   background: var(--cor-acao);
    color: #fff;
-   font-weight: 700;
-   font-size: 1.05em;
+   font-weight: 600;
+   font-size: 1em;
    padding: 12px 24px;
    border: none;
    border-radius: 8px;
@@ -259,44 +281,45 @@ input[type="file"] {
    align-items: center;
    justify-content: center;
    gap: 10px;
-   margin-left: auto;
-   transition: all 0.3s ease;
-   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+   transition: all 0.2s ease;
+   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
 }
 
 .btn-executar:hover {
+   background-color: var(--cor-acao-hover);
    transform: translateY(-2px);
-   box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5); 
-   filter: brightness(1.1);
+   box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
 }
 
 .form-footer {
    display: flex;
    justify-content: space-between;
-   align-items: center;
+   align-items: flex-end;
    padding: 0 40px;
+   margin-top: 12px;
 }
 
 .requisitos-validacao p {
-   font-size: 0.93em;
-   opacity: 0.6;
+   font-size: 0.9em;
    color: var(--cor-texto);
-   margin-bottom: 6px;
+   margin-bottom: 10px;
 }
 
 .requisitos-validacao ul {
    list-style: none;
-   font-size: 0.93em;
+   font-size: 0.85em;
    color: var(--cor-texto);
-   line-height: 1.6;
    opacity: 0.9;
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
 }
 
 .icone-check {
    color: var(--cor-texto-secundaria);
    font-weight: bold;
    margin-right: 4px;
-   transition: color 0.3 ease;
+   transition: color 0.3s ease;
    font-size: 1.1em;
 }
 
@@ -376,11 +399,13 @@ input[type="file"] {
 .file-status.sucesso {
    background-color: #2D4B43;
    border: 1px solid var(--cor-card2);
+   box-shadow: 0 4px 15px rgba(103, 195, 138, 0.15);
 }
 
 .upload-vendas .file-status.sucesso {
    background-color: #323A5F;
    border-color: var(--cor-card1);
+   box-shadow: 0 4px 15px rgba(105, 113, 174, 0.2);
 }
 
 .file-status.sucesso .file-icon-mini {
@@ -388,14 +413,14 @@ input[type="file"] {
    color: var(--cor-texto);
 }
 
-.file-status.suceso .file-name {
+.file-status.sucesso .file-name {
    color: var(--cor-texto);
    font-weight: 600;
    opacity: 1;
    font-style: normal;
 }
 
-.file-status.suceso .file-check {
+.file-status.sucesso .file-check {
    background-color: var(--cor-card2);
    color: var(--cor-primaria);
 }
