@@ -83,4 +83,40 @@ document.addEventListener('DOMContentLoaded', () => {
          requisitosValidacao[0].classList.remove('requisitos-ok');
       }
    }
+
+   // função pra configurar drag e drop 
+   function configurarDragAndDrop(cardElement, inputElement, tipo) {
+      // previnir o comportamento padrão do navegador ao arrastar sobre a caixa
+      ['dragenter', 'dragover'].forEach(eventName => {
+         cardElement.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            cardElement.classList.add('dragover');
+         });
+      });
+
+      // previnir o comportamento e remover o destaque visual ao sair ou soltar
+      ['dragleave', 'drop'].forEach(eventName => {
+         cardElement.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            cardElement.classList.remove('dragover');
+         });
+      });
+
+      // capturar o arquivo solto na caixa
+      cardElement.addEventListener('drop', e => {
+         const arquivo = e.dataTransfer.files[0];
+
+         if (arquivo) { 
+            inputElement.files = e.dataTransfer.files;
+            atualizarStatusCard(cardElement, arquivo, tipo)
+         }
+      });
+   }
+
+   configurarDragAndDrop(uploadVendas, inputVendas, 'vendas');
+   configurarDragAndDrop(uploadExtrato, inputExtrato, 'extrato');
 });

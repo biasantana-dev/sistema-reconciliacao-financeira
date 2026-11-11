@@ -404,7 +404,8 @@ input[type="file"] {
 
 .file-size {
    font-size: 0.75em;
-   color: #5a6475;
+   color: var(--cor-texto-secundaria);
+   opacity: 0.5;
 }
 
 /* estado inicial - aguardando arquivo*/
