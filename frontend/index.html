@@ -195,6 +195,60 @@
                   Executar Reconciliação</button>
             </div>
          </form>
+
+         <!-- etapa 2 - processamento -->
+         <div id="etapa-processando" class="oculto">
+            <div class="spinner"></div>
+            <h2>Cruzando transações...</h2>
+            <p>Comparando os registros de vendas com os lançamentos do extrato bancário.</p>
+         </div>
+
+         <!-- etapa 3 - resultados e match -->
+         <div id="etapa-resultados" class="oculto">
+            <!-- bloco 1 - cards re resumo -->
+            <div class="resumo-kpis">
+               <div class="kpi-card">
+                  <span class="kpi-titulo">Total Reconciliado</span>
+                  <strong class="kpi-valor" id="kpi-total">R$ 0,00</strong>
+               </div>
+
+               <div class="kpi-card">
+                  <span class="kpi-titulo">Divergências Encontradas</span>
+                  <strong class="kpi-valor alerta" id="kpi=divergencias">0</strong>
+               </div>
+
+               <div class="kpi-card">
+                  <span class="kpi-titulo">Taxa de Match</span>
+                  <strong class="kpi-valor sucesso" id="kpi-tax">0%</strong>
+               </div>
+            </div>
+
+            <!-- bloco 2 - tabela de cruzamentos -->
+            <div class="tabela-container">
+               <table class="tabela-resultados">
+                  <thead>
+                     <tr>
+                        <th>Pedido / Transação</th>
+                        <th>Data</th>
+                        <th>Valor Esperado</th>
+                        <th>Valor Recebido</th>
+                        <th>Status</th>
+                     </tr>
+                  </thead>
+
+                  <tbody id="tabela-resultado-body">
+                     <!-- o app.js injeta as linhas tr aqui -->
+                  </tbody>
+               </table>
+            </div>
+
+            <!-- bloco 3 - ações de rodapé -->
+            <div class="acoes-resultados">
+               <button type="button" id="btn-nova-reconciliacao" class="btn-secundario">
+                  Nova Reconciliação
+               </button>
+            </div>
+         </div>
       </main>
    </div>
 
