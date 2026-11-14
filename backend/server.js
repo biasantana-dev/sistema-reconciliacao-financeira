@@ -26,7 +26,10 @@ const lerCSV = (buffer) => {
       const stream = Readable.from(buffer); // transforma a memória num fluxo de dados
 
       stream.pipe(csv()) // passa os dados pelo tradutor CSV 
-      .on('data', (linha) => resultados.push(linha)) // a cada linha lida, guarda no array
+      .on('data', (linha) => {
+         const temDados = Object.values(linha).some(valor => valor && valor.trim() !== '');
+         if (temDados) resultados.push(linha);
+      }) // a cada linha lida, guarda no array
       .on('end', () => resolve(resultados)) // quando terminar, devolve o array
       .on('error', (erro) => reject(erro)); // se der erro avisa
    });
@@ -99,9 +102,9 @@ app.post('/api/executar-reconciliacao', async (req, res) => {
       res.status(200).json({
          msg: 'Reconciliação executada com sucesso!',
          totalCruzamentos: resultadosProntos.length,
-         amostraCruzamento: resultadosProntos[0],
          totalDivergencias: itensDivergentes.length,
-         divergencias: itensDivergentes
+         divergencias: itensDivergentes,
+         resultados: resultadosProntos
       });
 
    } catch (erro) {

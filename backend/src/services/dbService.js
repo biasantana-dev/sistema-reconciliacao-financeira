@@ -7,8 +7,8 @@ const inserirVendas = async (arrayVendas) => {
    // o pacote mysql2 exige que os multiplos valores sejam formatados como um array de arrays
    const valores = arrayVendas.map(venda => [
       venda.id_pedido,
-      venda.data,
-      venda.valor
+      venda.data_venda,
+      venda.valor_esperado
    ]);
 
    // o comando IGNORE previne que a API quebre caso envie o mesmo arquivo CSV duas vezes
@@ -22,9 +22,9 @@ const inserirExtrato = async (arrayExtrato) => {
    if (arrayExtrato.length === 0) return;
 
    const valores = arrayExtrato.map(extrato => [
-      extrato.transacao_banco,
-      extrato.data,
-      extrato.valor
+      extrato.codigo_transacao_banco,
+      extrato.data_compensacao,
+      extrato.valor_recebido
    ]);
 
    const query = 'INSERT IGNORE INTO extrato_bancario (codigo_transacao_banco, data_compensacao, valor_recebido) VALUES ?';
@@ -33,7 +33,7 @@ const inserirExtrato = async (arrayExtrato) => {
 };
 
 const inserirResultados = async (arrayResultados) => {
-   if (arrayResultados === 0) return;
+   if (arrayResultados.length === 0) return;
 
    // transforma a lista de objs em uma matriz pra o mySQL
    const valores = arrayResultados.map(resultado => [

@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
    const btnExecutar = document.querySelector('.btn-executar');
    const requisitosValidacao = document.querySelectorAll('.requisitos-validacao li');
    const passosStepper = document.querySelectorAll('.step');
+   const etapaProcessando = document.querySelector('#etapa-processando');
+   const etapaResultado = document.querySelector('#etapa-resultados');
+   const btnNovaReconciliacao = document.querySelector('#btn-nova-reconciliacao');
+   const kpiTotal = document.querySelector('#kpi-total');
+   const kpiTaxa = document.querySelector('#kpi-taxa');
+   const kpiDivergencias = document.querySelector('#kpi-divergencias');
+   const tabelaBody = document.querySelector('#tabela-resultado-body');
 
    const estadoArquivos = { vendas: null, extrato: null };
 
@@ -128,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cardElement.addEventListener('drop', e => {
          const arquivo = e.dataTransfer.files[0];
 
-         if (arquivo) { 
+         if (arquivo) {
             inputElement.files = e.dataTransfer.files;
             atualizarStatusCard(cardElement, arquivo, tipo)
          }
@@ -159,25 +166,29 @@ document.addEventListener('DOMContentLoaded', () => {
       irParaEtapa(2);
 
       try {
-         // disparo da fetch api
-         const response = await fetch('/api/reconciliacao', {
+         // enviar os arquivos csv pra serem salvos no mySQL
+         const resUpload = await fetch('http://localhost:3000/api/reconciliacao', {
             method: 'POST',
             body: formData
          });
+         if (!resUpload.ok) throw new Error(`Erro no upload: ${resUpload.status}`);
 
-         if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
+         // dispara o motor de cruzamento
+         const resMotor = await fetch('http://localhost:3000/api/executar-reconciliacao', {
+            method: 'POST'
+         });
+         if (!resMotor.ok) throw new Error(`Erro no cruzamento: ${resMotor.status}`);
 
          // recebe e processa os dados de sucesso
-         const dados = await response.json();
-         console.log('Resultado do processamento:', dados);
+         const dados = await resMotor.json();
 
-         // avança o stepper pra etapa 3 (resultados e match)
+         renderizarResultados(dados);
          irParaEtapa(3);
-         
+
       } catch (erro) {
          console.error('Erro na requisição', erro);
          alert('Falha ao processar os arquivos no servidor.');
-         
+
          // em caso de erro, volta pra etapa 1
          irParaEtapa(1);
 
@@ -199,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const primeiraLinha = texto.split('\n')[0].toLowerCase();
 
             // verifica se TODAS as colunas esperadas estão presente na primeira linha
-            const temTodasColunas = colunasEsperadas.every(coluna => primeiraLinha.includes(coluna.toLowerCase())); 
+            const temTodasColunas = colunasEsperadas.every(coluna => primeiraLinha.includes(coluna.toLowerCase()));
 
             resolve(temTodasColunas);
          }
@@ -227,5 +238,79 @@ document.addEventListener('DOMContentLoaded', () => {
             passo.classList.remove('active', 'completed');
          }
       });
+
+
+      form.classList.add('oculto');
+      etapaProcessando.classList.add('oculto');
+      etapaResultado.classList.add('oculto');
+
+      if (numeroEtapa === 1) {
+         form.classList.remove('oculto');
+      } else if (numeroEtapa === 2) {
+         etapaProcessando.classList.remove('oculto');
+      } else {
+         etapaResultado.classList.remove('oculto');
+      }
    }
+
+   // função pra formatar as datas 
+   function formatarDataBR(data) {
+      if (!data) return '-';
+      const d = new Date(data);
+      if (isNaN(d.getTime()) || d.getUTCFullYear() < 1970) return '-';
+      return d.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+   }
+
+   //função pra renderizar na tela o resultado do cruzamento
+   function renderizarResultados(dados) {
+      const lista = dados.resultados || [];
+
+      // soma o valor recebido dos itens com MATCH_PERFEITO
+      const totalReconciliacao = lista.filter(item => item.tipo_resultado === 'MATCH_PERFEITO').reduce((acc, item) => acc + Number(item.valor_recebido || 0), 0);
+
+      // calcula a taxa de match
+      const totalItens = lista.length;
+      const acertos = lista.filter(item => item.tipo_resultado === 'MATCH_PERFEITO').length;
+      const taxaMatch = totalItens > 0 ? ((acertos / totalItens) * 100).toFixed(1) : '0.0';
+
+      // formatar numeros em texto pra o formato de dinheiro padrao brasileiro
+      kpiTotal.textContent = totalReconciliacao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      kpiDivergencias.textContent = dados.totalDivergencias;
+      kpiTaxa.textContent = `${taxaMatch}%`;
+
+      // limpar os dados da tabela
+      tabelaBody.innerHTML = '';
+
+      lista.forEach(item => {
+         const tr = document.createElement('tr');
+
+         const dataVendaFormatada = formatarDataBR(item.data_venda);
+         const dataExtratoFormatada = formatarDataBR(item.data_compensacao);
+         const valorEsperadoFormatado = Number(item.valor_esperado || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+         const valorRecebidoFormatado = Number(item.valor_recebido || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+         // injetar os dados na tabela
+         tr.innerHTML = `
+               <td>${item.id_pedido || '-'} / ${item.codigo_transacao_banco || '-'}</td>
+               <td>${dataVendaFormatada}</td>
+               <td>${dataExtratoFormatada}</td>
+               <td>${valorEsperadoFormatado}</td>
+               <td>${valorRecebidoFormatado}</td>
+               <td><span class="badge-status">${item.tipo_resultado}</span></td>
+            `;
+
+         tabelaBody.appendChild(tr);
+      });
+   }
+
+
+   // ouvinte de evencto no btnNovaReconciliacao 
+   btnNovaReconciliacao.addEventListener('click', () => {
+      form.reset();
+
+      atualizarStatusCard(uploadVendas, null, 'vendas');
+      atualizarStatusCard(uploadExtrato, null, 'extrato');
+
+      irParaEtapa(1);
+   });
 });

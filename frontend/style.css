@@ -141,12 +141,13 @@ body {
    opacity: 0.75;
 }
 
-/* formulario */
-#formReconciliacao {
+.painel-reconciliacao {
    background-color: var(--cor-secundaria);
+   height: auto;
    border-radius: 15px;
    height: auto;
    padding-bottom: 26px;
+
 }
 
 /* barra de progresso*/
@@ -462,9 +463,9 @@ input[type="file"] {
 }
 
 /* pra esconder etapas que não estão ativas */
-/* .oculto {
+.oculto {
    display: none !important;
-} */
+}
 
 #etapa-processando {
    display: flex;
