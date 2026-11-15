@@ -73,9 +73,18 @@
 
             <!-- barra de progresso -->
             <div class="stepper-container">
-               <div class="step active">1. Upload de Arquivos</div>
-               <div class="step">2. Cruzamento de Dados</div>
-               <div class="step">3. Resultados e Match</div>
+               <div class="step active">
+                  <span class="step-badge">1</span>
+                  <span class="step-label">Upload de Arquivos</span>
+               </div>
+               <div class="step">
+                  <span class="step-badge">2</span>
+                  <span class="step-label">Cruzamento de Dados</span>
+               </div>
+               <div class="step">
+                  <span class="step-badge">3</span>
+                  <span class="step-label">Resultados e Match</span>
+               </div>
             </div>
 
             <!-- formulário com os dois cards de upload -->
@@ -203,54 +212,70 @@
             <!-- etapa 3 - resultados e match -->
             <div id="etapa-resultados" class="oculto">
 
-               <!-- bloco 1 - cards re resumo -->
-               <div class="resumo-kpis">
-                  <div class="kpi-card">
-                     <span class="kpi-titulo">Total Reconciliado</span>
-                     <strong class="kpi-valor" id="kpi-total">R$ 0,00</strong>
+
+               <div class="metricas-strip">
+                  <div class="metrica-item">
+                     <span class="metrica-label">Total Reconciliado</span>
+                     <strong class="metrica-valor" id="kpi-total">R$ 0,00</strong>
+                     <span class="metrica-caption" id="kpi-total-sub">Volume financeiro validado</span>
                   </div>
 
-                  <div class="kpi-card">
-                     <span class="kpi-titulo">Divergências Encontradas</span>
-                     <strong class="kpi-valor alerta" id="kpi-divergencias">0</strong>
+                  <div class="metrica-item">
+                     <span class="metrica-label">Divergências</span>
+                     <strong class="metrica-valor" id="kpi-divergencias">0</strong>
+                     <span class="metrica-caption" id="kpi-div-sub">Nenhuma inconsistência</span>
                   </div>
 
-                  <div class="kpi-card">
-                     <span class="kpi-titulo">Taxa de Match</span>
-                     <strong class="kpi-valor sucesso" id="kpi-taxa">0%</strong>
+                  <div class="metrica-item">
+                     <span class="metrica-label">Taxa de Conformidade</span>
+                     <strong class="metrica-valor sucesso" id="kpi-taxa">0%</strong>
+                     <span class="metrica-caption" id="kpi-taxa-sub">Índice de match</span>
                   </div>
                </div>
 
-               <!-- bloco 2 - tabela de cruzamentos -->
-               <div class="tabela-container">
-                  <table class="tabela-resultados">
-                     <thead>
-                        <tr>
-                           <th>Pedido / Transação</th>
-                           <th>Data Venda</th>
-                           <th>Data Extrato</th>
-                           <th>Valor Esperado</th>
-                           <th>Valor Recebido</th>
-                           <th>Status</th>
-                        </tr>
-                     </thead>
+               <!-- seção da tabela -->
+               <div class="secao-tabela">
+                  <div class="tabela-topo">
+                     <h3>Transações Analisadas</h3>
+                     <span class="contador-registros" id="contador-registros">0 registros</span>
+                  </div>
 
-                     <tbody id="tabela-resultado-body">
-                        <!-- o app.js injeta as linhas tr aqui -->
-                     </tbody>
-                  </table>
+                  <div class="tabela-wrapper">
+                     <table class="tabela-resultados">
+                        <thead>
+                           <tr>
+                              <th>Transação</th>
+                              <th><span class="dot-origem sistema"></span>Data Venda</th>
+                              <th><span class="dot-origem banco"></span>Data Extrato</th>
+                              <th><span class="dot-origem sistema"></span>Esperado</th>
+                              <th><span class="dot-origem banco"></span>Recebido</th>
+                              <th class="col-status">Status</th>
+                           </tr>
+                        </thead>
+
+                        <tbody id="tabela-resultado-body">
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
-               <!-- bloco 3 - ações de rodapé -->
+               <!-- rodapé -->
                <div class="acoes-resultados">
+                  <span class="info-rodape">Salvo automaticamente no histórico</span>
                   <button type="button" id="btn-nova-reconciliacao" class="btn-secundario">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                     </svg>
                      Nova Reconciliação
                   </button>
                </div>
             </div>
-
          </div>
-      </main>
+
+   </div>
+   </main>
    </div>
 
 

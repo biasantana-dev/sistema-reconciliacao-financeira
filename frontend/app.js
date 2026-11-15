@@ -166,21 +166,29 @@ document.addEventListener('DOMContentLoaded', () => {
       irParaEtapa(2);
 
       try {
+         // garantir que o usuário veja o spinner por pelo menos 1.5 segundo
+         const tempoMinimoLoading = new Promise(resolve => setTimeout(resolve, 1500));
+
          // enviar os arquivos csv pra serem salvos no mySQL
-         const resUpload = await fetch('http://localhost:3000/api/reconciliacao', {
-            method: 'POST',
-            body: formData
-         });
-         if (!resUpload.ok) throw new Error(`Erro no upload: ${resUpload.status}`);
+         const processarNoServidor = async () => {
+            const resUpload = await fetch('http://localhost:3000/api/reconciliacao', {
+               method: 'POST',
+               body: formData
+            });
+            if (!resUpload.ok) throw new Error(`Erro no upload: ${resUpload.status}`);
 
-         // dispara o motor de cruzamento
-         const resMotor = await fetch('http://localhost:3000/api/executar-reconciliacao', {
-            method: 'POST'
-         });
-         if (!resMotor.ok) throw new Error(`Erro no cruzamento: ${resMotor.status}`);
+            // dispara o motor de cruzamento
+            const resMotor = await fetch('http://localhost:3000/api/executar-reconciliacao', {
+               method: 'POST'
+            });
+            if (!resMotor.ok) throw new Error(`Erro no cruzamento: ${resMotor.status}`);
 
-         // recebe e processa os dados de sucesso
-         const dados = await resMotor.json();
+            return resMotor.json();
+         }
+
+
+         // executa o servidor e o cronômetro em paralelo e pega o retorno do servidor
+         const [dados] = await Promise.all([processarNoServidor(), tempoMinimoLoading]);
 
          renderizarResultados(dados);
          irParaEtapa(3);
@@ -224,18 +232,21 @@ document.addEventListener('DOMContentLoaded', () => {
    function irParaEtapa(numeroEtapa) {
       passosStepper.forEach((passo, index) => {
          const numeroDoPasso = index + 1; // como o index começa com 0, somar mais um pra ficar: 1, 2 e 3
+         const badge = passo.querySelector('.step-badge');
 
          if (numeroDoPasso < numeroEtapa) {
-            // etapa já concluída
             passo.classList.add('completed');
             passo.classList.remove('active');
+            if (badge) badge.textContent = '✓';
+
          } else if (numeroDoPasso === numeroEtapa) {
-            // etapa atual 
             passo.classList.add('active');
             passo.classList.remove('completed');
+            if (badge) badge.textContent = numeroDoPasso;
+
          } else {
-            // etapa futura
             passo.classList.remove('active', 'completed');
+            if (badge) badge.textContent = numeroDoPasso;
          }
       });
 
@@ -261,22 +272,54 @@ document.addEventListener('DOMContentLoaded', () => {
       return d.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
    }
 
+   // traduzir o enum pra um texto e classe de cor
+   const mapaStatusUI = {
+      MATCH_PERFEITO: { texto: 'Match Perfeito', classe: 'match' },
+      DIFERENCA_VALOR: { texto: 'Divergência de Valor', classe: 'alerta' },
+      DIFERENCA_DATA: { texto: 'Divergência de Data', classe: 'aviso' },
+      NAO_ENCONTRADO_NO_BANCO: { texto: 'Ausente no Banco', classe: 'alerta' },
+      NAO_ENCONTRADO_NO_SISTEMA: { texto: 'Ausente no Sistema', classe: 'aviso' }
+   };
+
    //função pra renderizar na tela o resultado do cruzamento
    function renderizarResultados(dados) {
       const lista = dados.resultados || [];
+      const totalItens = lista.length;
+      const acertos = lista.filter(item => item.tipo_resultado === 'MATCH_PERFEITO').length;
+      const qtdDivergencias = dados.totalDivergencias ?? (totalItens - acertos);
 
       // soma o valor recebido dos itens com MATCH_PERFEITO
       const totalReconciliacao = lista.filter(item => item.tipo_resultado === 'MATCH_PERFEITO').reduce((acc, item) => acc + Number(item.valor_recebido || 0), 0);
 
-      // calcula a taxa de match
-      const totalItens = lista.length;
-      const acertos = lista.filter(item => item.tipo_resultado === 'MATCH_PERFEITO').length;
       const taxaMatch = totalItens > 0 ? ((acertos / totalItens) * 100).toFixed(1) : '0.0';
 
-      // formatar numeros em texto pra o formato de dinheiro padrao brasileiro
+      // atualiza kpis
       kpiTotal.textContent = totalReconciliacao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-      kpiDivergencias.textContent = dados.totalDivergencias;
+      kpiDivergencias.textContent = qtdDivergencias;
       kpiTaxa.textContent = `${taxaMatch}%`;
+
+      // subtitulos e cor das divergencias 
+      const subTotal = document.querySelector('#kpi-total-sub');
+      const subDiv = document.querySelector('#kpi-div-sub');
+      const subTaxa = document.querySelector('#kpi-taxa-sub');
+      const iconDiv = document.querySelector('#icon-kpi-divergencias');
+      const contadorEl = document.querySelector('#contador-registros');
+
+      if (subTotal) subTotal.textContent = `${acertos} de ${totalItens} transações validadas`;
+      if (subTaxa) subTaxa.textContent = taxaMatch === '100.0' ? 'Conciliação integral sem perdas' : 'Baseado no volume cruzado';
+      if (contadorEl) contadorEl.textContent = `${totalItens} ${totalItens === 1 ? 'registro' : 'registros'}`;
+
+      if (qtdDivergencias > 0) {
+         kpiDivergencias.classList.add('alerta');
+         kpiDivergencias.classList.remove('sucesso');
+         if (iconDiv) iconDiv.className = 'kpi-icon vermelho';
+         if (subDiv) subDiv.textContent = 'Requer revisão manual';
+      } else {
+         kpiDivergencias.classList.remove('alerta');
+         kpiDivergencias.classList.add('sucesso');
+         if (iconDiv) iconDiv.className = 'kpi-icon verde';
+         if (subDiv) subDiv.textContent = 'Nenhuma inconsistência detectada';
+      }
 
       // limpar os dados da tabela
       tabelaBody.innerHTML = '';
@@ -289,14 +332,27 @@ document.addEventListener('DOMContentLoaded', () => {
          const valorEsperadoFormatado = Number(item.valor_esperado || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
          const valorRecebidoFormatado = Number(item.valor_recebido || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+         const classeBadge = item.tipo_resultado === 'MATCH_PERFEITO' ? 'match' : 'divergencia';
+         const statusInfo = mapaStatusUI[item.tipo_resultado] || { texto: item.tipo_resultado, classe: 'aviso' };
+
          // injetar os dados na tabela
          tr.innerHTML = `
-               <td>${item.id_pedido || '-'} / ${item.codigo_transacao_banco || '-'}</td>
-               <td>${dataVendaFormatada}</td>
-               <td>${dataExtratoFormatada}</td>
-               <td>${valorEsperadoFormatado}</td>
-               <td>${valorRecebidoFormatado}</td>
-               <td><span class="badge-status">${item.tipo_resultado}</span></td>
+               <td>
+               <div class="celula-ids">
+                  <span class="id-principal">${item.id_pedido || 'Sem pedido'}</span>
+                  <span class="id-secundario">${item.codigo_transacao_banco || 'Sem transação'}</span>
+               </div>
+            </td>
+            <td class="col-data">${dataVendaFormatada}</td>
+            <td class="col-data">${dataExtratoFormatada}</td>
+            <td class="col-numero">${valorEsperadoFormatado}</td>
+            <td class="col-numero valor-destaque">${valorRecebidoFormatado}</td>
+            <td class="col-status">
+               <span class="badge-status ${statusInfo.classe}">
+                  <span class="status-dot"></span>
+                  ${statusInfo.texto}
+               </span>
+            </td>
             `;
 
          tabelaBody.appendChild(tr);
