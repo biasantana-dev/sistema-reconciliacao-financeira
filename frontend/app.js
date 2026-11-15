@@ -288,6 +288,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const acertos = lista.filter(item => item.tipo_resultado === 'MATCH_PERFEITO').length;
       const qtdDivergencias = dados.totalDivergencias ?? (totalItens - acertos);
 
+      const btnTodos = document.querySelector('.filtro-pill[data-filtro="TODOS"]');
+      const btnDivergencias = document.querySelector('.filtro-pill[data-filtro="DIVERGENCIAS"]');
+      const btnMatch = document.querySelector('.filtro-pill[data-filtro="MATCH"]');
+
+      if (btnTodos) {
+         btnTodos.classList.add('active');
+         btnTodos.textContent = `Todos (${totalItens})`;
+      }
+
+      if (btnDivergencias) {
+         btnDivergencias.classList.remove('active');
+         btnDivergencias.textContent = `Divergências (${qtdDivergencias})`;
+      }
+
+      if (btnMatch) {
+         btnMatch.classList.remove('active');
+         btnMatch.textContent = `Conciliados (${acertos})`;
+      }
+
       // soma o valor recebido dos itens com MATCH_PERFEITO
       const totalReconciliacao = lista.filter(item => item.tipo_resultado === 'MATCH_PERFEITO').reduce((acc, item) => acc + Number(item.valor_recebido || 0), 0);
 
@@ -297,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
       kpiTotal.textContent = totalReconciliacao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       kpiDivergencias.textContent = qtdDivergencias;
       kpiTaxa.textContent = `${taxaMatch}%`;
+      kpiTaxa.parentElement.style.setProperty('--taxa', `${taxaMatch}%`);
 
       // subtitulos e cor das divergencias 
       const subTotal = document.querySelector('#kpi-total-sub');
@@ -321,44 +341,80 @@ document.addEventListener('DOMContentLoaded', () => {
          if (subDiv) subDiv.textContent = 'Nenhuma inconsistência detectada';
       }
 
-      // limpar os dados da tabela
+      // reseta o visual dos botões de filtro pra 'Todos' a cada nova reconciliação
+      document.querySelectorAll('.filtro-pill').forEach(btn => {
+         btn.classList.toggle('active', btn.dataset.filtro === 'TODOS');
+      })
+
+      // Renderiza linhas da tabela
       tabelaBody.innerHTML = '';
 
       lista.forEach(item => {
          const tr = document.createElement('tr');
+         tr.dataset.status = item.tipo_resultado;
 
          const dataVendaFormatada = formatarDataBR(item.data_venda);
          const dataExtratoFormatada = formatarDataBR(item.data_compensacao);
          const valorEsperadoFormatado = Number(item.valor_esperado || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
          const valorRecebidoFormatado = Number(item.valor_recebido || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-         const classeBadge = item.tipo_resultado === 'MATCH_PERFEITO' ? 'match' : 'divergencia';
          const statusInfo = mapaStatusUI[item.tipo_resultado] || { texto: item.tipo_resultado, classe: 'aviso' };
+
+         // pra destacar o campo que divergiu entre sistema e banco
+         const classeDataExtrato = item.tipo_resultado === 'DIFERENCA_DATA' ? 'celula-aviso' : '';
+         const classeValorRecebido = item.tipo_resultado === 'DIFERENCA_VALOR' ? 'celula-alerta' : '';
 
          // injetar os dados na tabela
          tr.innerHTML = `
-               <td>
-               <div class="celula-ids">
-                  <span class="id-principal">${item.id_pedido || 'Sem pedido'}</span>
-                  <span class="id-secundario">${item.codigo_transacao_banco || 'Sem transação'}</span>
-               </div>
-            </td>
-            <td class="col-data">${dataVendaFormatada}</td>
-            <td class="col-data">${dataExtratoFormatada}</td>
-            <td class="col-numero">${valorEsperadoFormatado}</td>
-            <td class="col-numero valor-destaque">${valorRecebidoFormatado}</td>
-            <td class="col-status">
-               <span class="badge-status ${statusInfo.classe}">
-                  <span class="status-dot"></span>
-                  ${statusInfo.texto}
-               </span>
-            </td>
+              <td>
+                  <div class="celula-ids">
+                     <span class="id-principal">${item.id_pedido || 'Sem pedido'}</span>
+                     <span class="id-secundario">${item.codigo_transacao_banco || 'Sem transação'}</span>
+                  </div>
+               </td>
+               <td class="col-data">${dataVendaFormatada}</td>
+               <td class="col-data ${classeDataExtrato}">${dataExtratoFormatada}</td>
+               <td class="col-numero">${valorEsperadoFormatado}</td>
+               <td class="col-numero valor-destaque ${classeValorRecebido}">${valorRecebidoFormatado}</td>
+               <td class="col-status">
+                  <span class="badge-status ${statusInfo.classe}">
+                     <span class="status-dot"></span>
+                     ${statusInfo.texto}
+                  </span>
+               </td>
             `;
 
          tabelaBody.appendChild(tr);
       });
    }
 
+   // ouvinte dos botoes de filtro 
+   document.querySelectorAll('.filtro-pill').forEach(botao => {
+      botao.addEventListener('click', () => {
+         document.querySelectorAll('.filtro-pill').forEach(b => b.classList.remove('active'));
+         botao.classList.add('active');
+
+         const filtro = botao.dataset.filtro;
+         const linhas = tabelaBody.querySelectorAll('tr');
+         let visiveis = 0;
+
+         linhas.forEach(tr => {
+            const isMatch = tr.dataset.status === 'MATCH_PERFEITO';
+            const mostrar =
+               filtro === 'TODOS' ||
+               (filtro === 'MATCH' && isMatch) ||
+               (filtro === 'DIVERGENCIAS' && !isMatch);
+
+            tr.style.display = mostrar ? '' : 'none';
+            if (mostrar) visiveis++;
+         });
+
+         const contadorEl = document.querySelector('#contador-registros');
+         if (contadorEl) {
+            contadorEl.textContent = `${visiveis} ${visiveis === 1 ? 'registro' : 'registros'}`;
+         }
+      });
+   });
 
    // ouvinte de evencto no btnNovaReconciliacao 
    btnNovaReconciliacao.addEventListener('click', () => {

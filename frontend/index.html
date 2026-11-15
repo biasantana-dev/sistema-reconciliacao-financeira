@@ -236,8 +236,16 @@
                <!-- seção da tabela -->
                <div class="secao-tabela">
                   <div class="tabela-topo">
-                     <h3>Transações Analisadas</h3>
-                     <span class="contador-registros" id="contador-registros">0 registros</span>
+                     <div class="tabela-titulo-grupo">
+                        <h3>Transações Analisadas</h3>
+                        <span class="contador-registros" id="contador-registros">0 registros</span>
+                     </div>
+
+                     <div class="filtros-tabela" id="filtros-tabela">
+                        <button type="button" class="filtro-pill active" data-filtro="TODOS">Todos</button>
+                        <button type="button" class="filtro-pill" data-filtro="DIVERGENCIAS">Divergências</button>
+                        <button type="button" class="filtro-pill" data-filtro="MATCH">Conciliados</button>
+                     </div>
                   </div>
 
                   <div class="tabela-wrapper">

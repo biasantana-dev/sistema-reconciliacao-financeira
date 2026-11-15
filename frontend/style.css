@@ -35,6 +35,10 @@ body {
 /* barra lateral*/
 .sidebar {
    width: 260px;
+   height: 100vh;
+   position: sticky;
+   top: 0;
+   flex-shrink: 0;
    background-color: var(--cor-secundaria);
    border-right: 1px solid var(--cor-border);
    display: flex;
@@ -122,7 +126,8 @@ body {
 /* conteudo principal */
 .main-conteudo {
    flex-grow: 1;
-   padding: 28px 50px 32px;
+   min-width: 0;
+   padding: 24px 48px;
    overflow-y: auto;
 }
 
@@ -134,17 +139,21 @@ body {
    margin-bottom: 4px;
 }
 
-.main-conteudo>p {
+.main-conteudo > p {
    color: var(--cor-texto-secundaria);
-   margin-bottom: 24px;
+   margin-bottom: 22px;
    font-size: 0.9em;
    opacity: 0.75;
 }
 
 .painel-reconciliacao {
+   display: flex;
+   flex-direction: column;
+   overflow: hidden;
    background-color: var(--cor-secundaria);
+   border: 1px solid var(--cor-border);
    border-radius: 15px;
-   padding-bottom: 32px;
+   height: 525px;
    width: 100%;
 }
 
@@ -152,7 +161,7 @@ body {
 @keyframes surgirEtapa {
    from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(10px);
    }
 
    to {
@@ -161,32 +170,18 @@ body {
    }
 }
 
-#formReconciliacao,
-#etapa-processando,
-#etapa-resultados {
-   min-height: 410px;
-}
-
-#formReconciliacao {
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-}
-
 /* dispara a animação sempre que a etapa ficar visivel */
-#formReconciliacao:not(.oculto),
-#etapa-processando:not(.oculto),
-#etapa-resultados:not(.oculto) {
+#formReconciliacao:not(.oculto), #etapa-processando:not(.oculto), #etapa-resultados:not(.oculto) {
    animation: surgirEtapa 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* barra de progresso*/
 .stepper-container {
    display: flex;
+   flex-shrink: 0;
    background-color: rgba(18, 25, 39, 0.35);
-   margin-bottom: 32px;
+   margin-bottom: 20px;
    border-bottom: 1px solid var(--cor-border);
-   border-radius: 15px 15px 0 0;
 }
 
 .step {
@@ -196,7 +191,7 @@ body {
    align-items: center;
    justify-content: center;
    gap: 10px;
-   padding: 16px 12px;
+   padding: 15px 12px;
    flex: 1;
    color: var(--cor-texto-secundaria);
    font-weight: 500;
@@ -243,22 +238,28 @@ body {
    border-color: rgba(103, 195, 138, 0.45);
 }
 
+/* formulario - upload */
+#formReconciliacao {
+   flex: 1;
+   min-height: 0;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   padding: 5px 0 30px;
+}
+
 /* cards de upload */
 .upload-box {
    display: grid;
    grid-template-columns: 1fr 1fr;
    gap: 40px;
-   margin-bottom: 30px;
    padding: 0 40px;
 }
 
-.upload-vendas,
-.upload-extrato {
+.upload-vendas, .upload-extrato {
    border-radius: 15px;
-   padding: 30px 24px 20px;
-   align-items: center;
+   padding: 28px 24px 20px;
    transition: all 0.3s ease;
-   align-items: center;
 }
 
 .upload-vendas {
@@ -296,20 +297,20 @@ body {
 }
 
 /* faz o label se comportar como um bloco clicável inteiro*/
-.upload-vendas label,
-.upload-extrato label {
+.upload-vendas label, .upload-extrato label {
    display: flex;
    flex-direction: column;
    align-items: center;
    cursor: pointer;
    width: 100%;
    height: 100%;
+   text-align: center;
 }
 
 .file-icon-topo {
-   width: 54px;
-   height: 54px;
-   margin-bottom: 14px;
+   width: 50px;
+   height: 50px;
+   margin-bottom: 12px;
    stroke-width: 1.5;
 }
 
@@ -321,12 +322,10 @@ body {
    color: var(--cor-card2);
 }
 
-.upload-vendas h2,
-.upload-extrato h2 {
+.upload-vendas h2, .upload-extrato h2 {
    font-size: 1.1em;
    margin-bottom: 6px;
    font-weight: 600;
-   display: block;
 }
 
 .upload-vendas h2 {
@@ -338,11 +337,11 @@ body {
 }
 
 .descricao {
-   font-size: 0.88em;
+   font-size: 0.86em;
    line-height: 1.5;
    color: var(--cor-texto-secundaria);
    opacity: 0.75;
-   margin: 4px auto 16px;
+   margin: 4px auto 14px;
 }
 
 /* esconde o input nativo do navegador*/
@@ -362,7 +361,7 @@ input[type="file"] {
    background: var(--cor-acao);
    color: #fff;
    font-weight: 600;
-   font-size: 1em;
+   font-size: 0.95em;
    padding: 12px 24px;
    border: none;
    border-radius: 8px;
@@ -390,19 +389,19 @@ input[type="file"] {
 }
 
 .requisitos-validacao p {
-   font-size: 0.9em;
+   font-size: 0.88em;
    color: var(--cor-texto);
-   margin-bottom: 10px;
+   margin-bottom: 8px;
 }
 
 .requisitos-validacao ul {
    list-style: none;
-   font-size: 0.85em;
+   font-size: 0.84em;
    color: var(--cor-texto);
    opacity: 0.9;
    display: flex;
    flex-direction: column;
-   gap: 6px;
+   gap: 5px;
 }
 
 .icone-check {
@@ -429,7 +428,7 @@ input[type="file"] {
    padding: 10px 14px;
    width: 100%;
    max-width: 260px;
-   margin: 15px auto 0;
+   margin: 12px auto 0;
    gap: 12px;
    transition: all 0.3s ease;
    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
@@ -438,8 +437,8 @@ input[type="file"] {
 .file-icon-mini {
    color: var(--cor-texto-secundaria);
    opacity: 0.5;
-   width: 34px;
-   height: 34px;
+   width: 32px;
+   height: 32px;
 }
 
 .file-details {
@@ -478,6 +477,7 @@ input[type="file"] {
    align-items: center;
    justify-content: center;
    margin-left: auto;
+   flex-shrink: 0;
    transition: all 0.3s ease;
 }
 
@@ -525,12 +525,15 @@ input[type="file"] {
    display: none !important;
 }
 
+
+/* processamento */
 #etapa-processando {
+   flex: 1;
+   min-height: 0;
    display: flex;
    flex-direction: column;
    align-items: center;
    justify-content: center;
-   min-height: 360px;
    padding: 40px;
    text-align: center;
 }
@@ -539,7 +542,7 @@ input[type="file"] {
    width: 48px;
    height: 48px;
    border: 4px solid rgba(105, 113, 174, 0.2);
-   border-top-color: var(--cor-card2);
+   border-top-color: var(--cor-acao);
    border-radius: 50%;
    animation: girar 0.9s linear infinite;
    margin-bottom: 20px;
@@ -564,18 +567,23 @@ input[type="file"] {
    opacity: 0.75;
 }
 
+
+/* resultado dentro do container */
 #etapa-resultados {
+   flex: 1;
+   min-height: 0;
    display: flex;
    flex-direction: column;
-   padding: 0 40px 8px;
+   padding: 0 40px 18px;
 }
 
-/* 1. Faixa de métricas sem caixa externa: crava o alinhamento na mesma linha da tabela */
+/* faixa de métricas */
 .metricas-strip {
+   flex-shrink: 0;
    display: grid;
    grid-template-columns: repeat(3, 1fr);
-   padding: 4px 0 28px;
-   margin-bottom: 28px;
+   padding: 0 0 14px;
+   margin-bottom: 14px;
    border-bottom: 1px solid var(--cor-border);
 }
 
@@ -595,24 +603,39 @@ input[type="file"] {
    border-right: none;
 }
 
+.metrica-item:last-child::after {
+   content: '';
+   display: block;
+   width: 100%;
+   max-width: 170px;
+   height: 3px;
+   margin-top: 7px;
+   border-radius: 999px;
+   background: linear-gradient(
+      90deg,
+      var(--cor-card2) var(--taxa, 0%),
+      rgba(255, 255, 255, 0.08) var(--taxa, 0%)
+   );
+}
+
 .metrica-label {
-   font-size: 0.73rem;
+   font-size: 0.71em;
    font-weight: 500;
    text-transform: uppercase;
    letter-spacing: 0.06em;
    color: var(--cor-texto-secundaria);
    opacity: 0.6;
-   margin-bottom: 8px;
+   margin-bottom: 4px;
 }
 
 .metrica-valor {
-   font-size: 1.8rem;
+   font-size: 1.55em;
    font-weight: 600;
    letter-spacing: -0.03em;
    color: var(--cor-texto);
    font-variant-numeric: tabular-nums;
    line-height: 1.15;
-   margin-bottom: 6px;
+   margin-bottom: 3px;
 }
 
 .metrica-valor.sucesso {
@@ -624,47 +647,113 @@ input[type="file"] {
 }
 
 .metrica-caption {
-   font-size: 0.78rem;
+   font-size: 0.75em;
    color: var(--cor-texto-secundaria);
    opacity: 0.5;
 }
 
 /* 2. Tabela com ritmo uniforme entre todas as colunas */
 .secao-tabela {
-   margin-bottom: 32px;
-}
-
-.tabela-topo {
+   flex: 1;
+   min-height: 0;
    display: flex;
-   align-items: center;
-   justify-content: space-between;
+   flex-direction: column;
    margin-bottom: 14px;
 }
 
+.tabela-topo {
+   flex-shrink: 0;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   margin-bottom: 8px;
+}
+
 .tabela-topo h3 {
-   font-size: 0.94rem;
+   font-size: 0.9rem;
    font-weight: 600;
    color: var(--cor-texto);
 }
 
+.tabela-titulo-grupo {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+}
+
 .contador-registros {
-   font-size: 0.78rem;
+   font-size: 0.75rem;
    color: var(--cor-texto-secundaria);
    opacity: 0.55;
 }
 
+.filtros-tabela {
+   display: flex;
+   gap: 4px;
+   background-color: rgba(18, 25, 39, 0.55);
+   padding: 3px;
+   border-radius: 8px;
+   border: 1px solid var(--cor-border);
+}
+
+.filtro-pill {
+   background: transparent;
+   border: none;
+   color: var(--cor-texto-secundaria);
+   font-size: 0.75em;
+   font-weight: 500;
+   padding: 4px 11px;
+   border-radius: 6px;
+   cursor: pointer;
+   transition: all 0.2s ease;
+}
+
+.filtro-pill:hover {
+   color: var(--cor-texto);
+}
+
+.filtro-pill.active {
+   background-color: var(--cor-destaque);
+   color: var(--cor-texto);
+}
+
+/* area rolavel */
 .tabela-wrapper {
+   flex: 1;
+   min-height: 0;
    width: 100%;
    overflow-x: auto;
+   overflow-y: auto;
+   border-top: 1px solid var(--cor-border);
+   border-bottom: 1px solid var(--cor-border);
+}
+
+/* barra de rolagem */
+.tabela-wrapper::-webkit-scrollbar {
+   width: 6px;
+   height: 6px;
+}
+
+.tabela-wrapper::-webkit-scrollbar-track {
+   background: transparent;
+}
+
+.tabela-wrapper::-webkit-scrollbar-thumb {
+   background-color: rgba(255, 255, 255, 0.14);
+   border-radius: 999px;
+}
+
+.tabela-wrapper::-webkit-scrollbar-thumb:hover {
+   background-color: rgba(255, 255, 255, 0.28);
 }
 
 .tabela-resultados {
    width: 100%;
-   border-collapse: collapse;
+   border-collapse: separate;
    text-align: left;
+   border-spacing: 0;
 }
 
-/* Proporção equilibrada que elimina espaços vazios no meio */
 .tabela-resultados th:nth-child(1) { width: 24%; }
 .tabela-resultados th:nth-child(2) { width: 15%; }
 .tabela-resultados th:nth-child(3) { width: 15%; }
@@ -672,35 +761,54 @@ input[type="file"] {
 .tabela-resultados th:nth-child(5) { width: 15%; }
 .tabela-resultados th:nth-child(6) { width: 16%; }
 
-.tabela-resultados th {
-   font-size: 0.72rem;
+/* cabeçalho fixo */
+.tabela-resultados thead th {
+   position: sticky;
+   top: 0;
+   z-index: 2;
+   background-color: var(--cor-secundaria);
+   font-size: 0.71em;
    font-weight: 600;
    text-transform: uppercase;
    letter-spacing: 0.06em;
-   color: var(--cor-texto-secundaria);
-   opacity: 0.6;
-   padding: 12px 16px;
-   border-top: 1px solid var(--cor-border);
+   color: rgba(226, 232, 240, 0.65);
+   padding: 9px 16px;
    border-bottom: 1px solid var(--cor-border);
    white-space: nowrap;
 }
 
 .tabela-resultados td {
-   padding: 16px;
+   padding: 9px 16px;
    border-bottom: 1px solid var(--cor-border);
-   font-size: 0.88rem;
+   font-size: 0.85em;
    color: var(--cor-texto);
    vertical-align: middle;
 }
 
-.tabela-resultados th:first-child,
-.tabela-resultados td:first-child {
+.tabela-resultados tbody tr:last-child td {
+   border-bottom: none;
+}
+
+.tabela-resultados th:first-child, .tabela-resultados td:first-child {
    padding-left: 0;
 }
 
-.tabela-resultados th:last-child,
+.tabela-resultados th:last-child {
+   padding-right: 24px;
+}
+
 .tabela-resultados td:last-child {
-   padding-right: 0;
+   padding-right: 18px;
+}
+
+.celula-alerta {
+   color: #f87171 !important;
+   font-weight: 600;
+}
+
+.celula-aviso {
+   color: #fbbf24 !important;
+   font-weight: 600;
 }
 
 .dot-origem {
@@ -713,8 +821,13 @@ input[type="file"] {
    transform: translateY(-1px);
 }
 
-.dot-origem.sistema { background-color: var(--cor-card1); }
-.dot-origem.banco { background-color: var(--cor-card2); }
+.dot-origem.sistema { 
+   background-color: var(--cor-card1); 
+}
+
+.dot-origem.banco { 
+   background-color: var(--cor-card2); 
+}
 
 .tabela-resultados tbody tr {
    transition: background-color 0.15s ease;
@@ -737,16 +850,14 @@ input[type="file"] {
 
 .id-secundario {
    font-family: 'Consolas', 'Courier New', monospace;
-   font-size: 0.78rem;
+   font-size: 0.78em;
    color: var(--cor-texto-secundaria);
    opacity: 0.55;
    padding-left: 8px;
    border-left: 1px solid var(--cor-border);
 }
 
-/* Alinhado à esquerda com tabular-nums: fecha o buraco no meio da tabela */
-.col-data,
-.col-numero {
+.col-data, .col-numero {
    text-align: left;
    font-variant-numeric: tabular-nums;
    color: var(--cor-texto-secundaria);
@@ -767,7 +878,7 @@ input[type="file"] {
    gap: 6px;
    padding: 4px 10px;
    border-radius: 6px;
-   font-size: 0.78rem;
+   font-size: 0.78em;
    font-weight: 500;
 }
 
@@ -793,15 +904,16 @@ input[type="file"] {
    color: #fbbf24;
 }
 
-/* 3. Rodapé ancorado na mesma linha-guia */
+/* rodapé tabela */
 .acoes-resultados {
+   flex-shrink: 0;
    display: flex;
    align-items: center;
    justify-content: space-between;
 }
 
 .info-rodape {
-   font-size: 0.78rem;
+   font-size: 0.78em;
    color: var(--cor-texto-secundaria);
    opacity: 0.5;
 }
@@ -813,10 +925,10 @@ input[type="file"] {
    background-color: transparent;
    border: 1px solid var(--cor-border);
    color: var(--cor-texto);
-   padding: 9px 16px;
+   padding: 8px 16px;
    border-radius: 8px;
    font-weight: 500;
-   font-size: 0.85rem;
+   font-size: 0.84em;
    cursor: pointer;
    transition: all 0.2s ease;
 }
