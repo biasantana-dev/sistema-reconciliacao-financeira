@@ -14,8 +14,12 @@ const formatarDataISO = data => {
 // cria a funçao principal do motor
 const executarReconciliacao = async () => {
    try {
-      const [vendas] = await db.query("SELECT * FROM vendas_sistema WHERE status_reconciliacao = 'PENDENTE'");
-      const [extratos] = await db.query("SELECT * FROM extrato_bancario WHERE status_reconciliacao = 'PENDENTE");
+      const [vendas] = await db.query(
+         "SELECT * FROM vendas_sistema WHERE status_reconciliacao IS NULL OR status_reconciliacao = 'PENDENTE'"
+      );
+      const [extratos] = await db.query(
+         "SELECT * FROM extrato_bancario WHERE status_reconciliacao IS NULL OR status_reconciliacao = 'PENDENTE'"
+      );
 
       const resultados = [];
       const extratosUsados = new Set(); // pra evitar que 1 lançamento bancario pague 2 vendas
@@ -120,7 +124,7 @@ const executarReconciliacao = async () => {
                data_venda: null,
                data_compensacao: itemBanco.data_compensacao,
                valorEsperado: 0,
-               valor_recebido: valor
+               valor_recebido: valorRecebido
             });
          }
       }
@@ -128,7 +132,7 @@ const executarReconciliacao = async () => {
       // atualiza status nas tabelas originais pra não reprocessar no proximo upload
       const idsVendas = vendas.map(v => v.id);
       const idsExtratos = extratos.map(e => e.id);
-      
+
       if (idsVendas.length > 0) {
          await db.query("UPDATE vendas_sistema SET status_reconciliacao = 'CONCILIADO' WHERE id IN (?)", [idsVendas]);
       }
