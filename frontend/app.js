@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
          // garantir que o usuário veja o spinner por pelo menos 1.5 segundo
-         const tempoMinimoLoading = new Promise(resolve => setTimeout(resolve, 1500));
+         const tempoMinimoLoading = new Promise(resolve => setTimeout(resolve, 2600));
 
          // enviar os arquivos csv pra serem salvos no mySQL
          const processarNoServidor = async () => {

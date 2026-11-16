@@ -204,9 +204,25 @@
 
             <!-- etapa 2 - processamento -->
             <div id="etapa-processando" class="oculto">
-               <div class="spinner"></div>
+               <div class="recon-loader" aria-hidden="true">
+                  <span class="elo elo-vendas"></span>
+                  <span class="elo elo-extrato"></span>
+               </div>
+
                <h2>Cruzando transações...</h2>
                <p>Comparando os registros de vendas com os lançamentos do extrato bancário.</p>
+
+               <div class="etapas-processamento">
+                  <div class="proc-item passo-1">
+                     <span>Lendo e validando estrutura dos arquivos CSV</span>
+                  </div>
+                  <div class="proc-item passo-2">
+                     <span>Normalizando datas e valores monetários</span>
+                  </div>
+                  <div class="proc-item passo-3">
+                     <span>Identificando matches e divergências</span>
+                  </div>
+               </div>
             </div>
 
             <!-- etapa 3 - resultados e match -->
@@ -253,10 +269,10 @@
                         <thead>
                            <tr>
                               <th>Transação</th>
-                              <th><span class="dot-origem sistema"></span>Data Venda</th>
-                              <th><span class="dot-origem banco"></span>Data Extrato</th>
-                              <th><span class="dot-origem sistema"></span>Esperado</th>
-                              <th><span class="dot-origem banco"></span>Recebido</th>
+                              <th>Data Venda</th>
+                              <th>Data Extrato</th>
+                              <th>Esperado</th>
+                              <th>Recebido</th>
                               <th class="col-status">Status</th>
                            </tr>
                         </thead>
