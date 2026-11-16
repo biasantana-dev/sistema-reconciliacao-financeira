@@ -1,4 +1,5 @@
 // importaçao das bibliotecas (dependências)
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
@@ -10,7 +11,7 @@ const { executarReconciliacao } = require('./src/services/reconciliacaoService')
 
 // inicialização do app
 const app = express();
-const PORT = 3000; // porta onde o servidor vai rodar localmente
+const PORT = process.env.PORT || 3000; // porta onde o servidor vai rodar localmente
 
 // middleware (os seguranças e tradutores da api)
 app.use(cors()); // permite que o frontend converse com a API sem ser bloqueada

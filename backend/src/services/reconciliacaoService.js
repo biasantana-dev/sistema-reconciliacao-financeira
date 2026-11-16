@@ -7,35 +7,56 @@ const formatarDataISO = data => {
 
    const d = new Date(data);
    if (isNaN(d.getTime()) || d.getUTCFullYear() < 1970) return null;
-   
+
    return d.toISOString().split('T')[0];
-} 
+}
 
 // cria a funçao principal do motor
 const executarReconciliacao = async () => {
    try {
-      const [vendas] = await db.query('SELECT * FROM vendas_sistema');
-      const [extratos] = await db.query('SELECT * FROM extrato_bancario');
-
-      console.log(`Pronto para cruzar: ${vendas.length} vendas com ${extratos.length} extratos.`);
+      const [vendas] = await db.query("SELECT * FROM vendas_sistema WHERE status_reconciliacao = 'PENDENTE'");
+      const [extratos] = await db.query("SELECT * FROM extrato_bancario WHERE status_reconciliacao = 'PENDENTE");
 
       const resultados = [];
+      const extratosUsados = new Set(); // pra evitar que 1 lançamento bancario pague 2 vendas
 
       for (const venda of vendas) {
          const dataVendaISO = formatarDataISO(venda.data_venda);
          const valorEsperado = Number(venda.valor_esperado || 0);
 
-         // .find() pra varrer a lista do banco de dados, buscando data ou valor
-         const extratoEncontrado = extratos.find((itemBanco) => {
-            const dataBancoISO = formatarDataISO(itemBanco.data_compensacao);
-            const valorRecebido = Number(itemBanco.valor_recebido || 0);
+         // primeira prioridade: match perfeito
+         let extratoEncontrado = extratos.find(item => {
+            if (extratosUsados.has(item.id)) return false;
+            const dataBancoISO = formatarDataISO(item.data_compensacao);
+            const valorRecebido = Number(item.valor_recebido || 0);
 
-            const mesmaData = dataVendaISO !== null && dataVendaISO === dataBancoISO;
-            const mesmoValor = valorEsperado > 0 && valorEsperado === valorRecebido;
-            return mesmaData || mesmoValor;
+            return dataVendaISO !== null && dataVendaISO === dataBancoISO && valorEsperado === valorRecebido;
          });
 
+
+         // segunda prioridade: mesmo valor e data diferente
+         if (!extratoEncontrado) {
+            extratoEncontrado = extratos.find(item => {
+               if (extratosUsados.has(item.id)) return false;
+               const valorRecebido = Number(item.valor_recebido || 0);
+
+               return valorEsperado > 0 && valorEsperado === valorRecebido;
+            });
+         }
+
+         // terceira prioridade: mesma data e valor diferente
+         if (!extratoEncontrado) {
+            extratoEncontrado = extratos.find(item => {
+               if (extratosUsados.has(item.id)) return false;
+               const dataBancoISO = formatarDataISO(item.data_compensacao);
+
+               return dataVendaISO !== null && dataVendaISO === dataBancoISO;
+            });
+         }
+
          if (extratoEncontrado) {
+            extratosUsados.add(extratoEncontrado.id);
+
             const dataBancoISO = formatarDataISO(extratoEncontrado.data_compensacao);
             const valorRecebido = Number(extratoEncontrado.valor_recebido || 0);
 
@@ -47,7 +68,8 @@ const executarReconciliacao = async () => {
 
             if (mesmaData && !mesmoValor) {
                tipoResultado = 'DIFERENCA_VALOR';
-               valorDiferenca = valorEsperado - valorRecebido;
+               valorDiferenca = Number((valorEsperado - valorRecebido).toFixed(2));
+
             } else if (!mesmaData && mesmoValor) {
                tipoResultado = 'DIFERENCA_DATA';
                valorDiferenca = 0.00;
@@ -83,35 +105,43 @@ const executarReconciliacao = async () => {
          }
       }
 
-      // varrer extrato pra achar se tem mais dinheiro que no sistema
+      // varrer extrato pra achar entradas que nao casaram com nenhuma venda
       for (const itemBanco of extratos) {
-
-         // verifica se o id de extrato ja foi guardado na lista resultados
-         const jaFoiProcessado = resultados.some(r => r.id_extrato === itemBanco.id);
-
-         if (!jaFoiProcessado) {
+         if (!extratosUsados.has(itemBanco.id)) {
             const valorRecebido = Number(itemBanco.valor_recebido || 0);
 
-            // nao encontrado no sistema
             resultados.push({
                id_venda: null,
                id_extrato: itemBanco.id,
                tipo_resultado: 'NAO_ENCONTRADO_NO_SISTEMA',
-               valor_diferenca: 0 - valorRecebido,
+               valor_diferenca: Number((0 - valorRecebido).toFixed(2)),
                id_pedido: null,
                codigo_transacao_banco: itemBanco.codigo_transacao_banco,
                data_venda: null,
                data_compensacao: itemBanco.data_compensacao,
-               valor_esperado: 0,
-               valor_recebido: valorRecebido
+               valorEsperado: 0,
+               valor_recebido: valor
             });
          }
+      }
+
+      // atualiza status nas tabelas originais pra não reprocessar no proximo upload
+      const idsVendas = vendas.map(v => v.id);
+      const idsExtratos = extratos.map(e => e.id);
+      
+      if (idsVendas.length > 0) {
+         await db.query("UPDATE vendas_sistema SET status_reconciliacao = 'CONCILIADO' WHERE id IN (?)", [idsVendas]);
+      }
+
+      if (idsExtratos.length > 0) {
+         await db.query("UPDATE extrato_bancario SET status_reconciliacao = 'CONCILIADO' WHERE id IN (?)", [idsExtratos]);
       }
 
       return resultados;
 
    } catch (erro) {
       console.error('Erro no motor de Reconciliação', erro);
+      throw erro;
    }
 };
 

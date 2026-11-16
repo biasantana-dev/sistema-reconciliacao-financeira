@@ -1,12 +1,12 @@
-const { Connection } = require('mysql2');
+require('dotenv').config();
 const mysql = require('mysql2/promise'); //usar a versão com promises pra poder usar async/await
 
 // criação do pool de ligações
 const pool = mysql.createPool({
-   host: 'localhost', // onde o mySQL vai rodar 
-   user: 'root', // utilizador padrão do mySQL
-   password: 'maggot@08',
-   database: 'reconciliacao_financeira',
+   host: process.env.DB_HOST || 'localhost', // onde o mySQL vai rodar 
+   user: process.env.DB_USER || 'root', // utilizador padrão do mySQL
+   password: process.env.DB_PASSWORD || '',
+   database: process.env.DB_NAME || 'reconciliacao_financeira',
    waitForConnections: true,
    connectionLimit: 10, // permite até 10 ligações simultaneas para processamento rápido
    queueLimit: 0
