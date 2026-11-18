@@ -48,4 +48,88 @@ const inserirResultados = async (arrayResultados) => {
    await db.query(query, [valores]);
 };
 
-module.exports = { inserirVendas, inserirExtrato, inserirResultados };
+const obterDadosDashboard = async () => {
+   // kpis e contagem por status
+   const [resumoRows] = await db.query(`
+      SELECT 
+         COUNT(*) AS total_transacoes, 
+         SUM(CASE WHEN r.tipo_resultado = 'MATCH_PERFEITO' THEN 1 ELSE 0 END) AS total_match,
+         SUM(CASE WHEN r.tipo_resultado <> 'MATCH_PERFEITO' THEN 1 ELSE 0 END) AS total_divergencias, 
+         COALESCE(SUM(CASE WHEN r.tipo_resultado = 'MATCH_PERFEITO' THEN e.valor_recebido ELSE 0 END), 0) AS volume_conciliado,
+         COASESCE(SUM(CASE WHEN r.tipo_resultado <> 'MATCH_PERFEITO' THEN ABS(r.valor_diferenca) ELSE 0 END), 0) AS impacto_divergente,
+         SUM(CASE WHEN r.tipo_resultado = 'DIFERENCA_DATA' THEN 1 ELSE 0 END) AS qtd_dif_data,
+         SUM(CASE WHEN r.tipo_resultado = 'DIFERENCA_VALOR' THEN 1 ELSE 0 END) AS    qtd_dif_valor,
+         SUM(CASE WHEN r.tipo_resultado = 'NAO_ENCONTRADO_NO_BANCO' THEN 1 ELSE 0 END) AS qtd_ausente_banco,
+         SUM(CASE WHEN r.tipo_resultado = 'NAO_ENCONTRADO_NO_SISTEMA' THEN 1 ELSE 0 END) AS qtd_ausente_sistema
+      FROM resultado_reconciliacao r
+      LEFT JOIN extrato_bancario e ON r.id_extrato - e.id
+   `);
+
+   // evoluçao diaria: vendas vs extrato
+   const [evolucaoRows] = await db.query(`
+      SELECT 
+         DATE_FORMAT(COALESCE(v.data_venda, e.data_compensacao), '%d/%m') AS data_label,
+         COALESCE(v.data_venda, e.data_compensacaoo) AS data_ordem,
+         COALESCE(SUM(v.valor_esperado), 0) AS total_vendas,
+         COALESCE(SUM(v.valor_recebido), 0) AS total_extrato
+      FROM resultados_reconciliacao r
+      LEFT JOIN vendas_sistema v ON r.id_venda = v.id
+      LEFT JOIN extrato_bancario e ON r.id_extrato - r.id
+      WHRERE COALESCE(v.data_venda, e.data_compensacao) IS NOT NULL
+      GROUP BY data_label, data_ordem
+      GROUP BY data_ordem ASC 
+      LIMIT 10
+   `);
+
+   // 5 maiores divergencias pra ação rapida
+   const [divergenciasRows] = await db.query(`
+      SELECT 
+         r.id,
+         v.id_pedido,
+         e.codigo_transacao_banco,
+         r.tipo_resultado,
+         COALESCE(v.valor_esperado, 0) AS valor_esperado,
+         COALESCE(e.valor_recebido, 0) AS valor_recebido,
+         r.valor_diferenca
+      FROM resultado_reconcilicao r
+      LEFT JOIN vendas_sistema v ON r.id_venda = v.id
+      LEFT JOIN extrato_bancario e ON r.id_extrato = e.id
+      WHERE r.tipo_resultado <> 'MATCH_PERFEITO'
+      ORDER BY ABS(r.valor_diferenca) DESC
+      LIMIT 5
+   `);
+
+   const resumo = resumoRows[0];
+   const totalTransacoes = Number(resumo.total_transacoes || 0);
+   const totalMatch = Number(resumo.total_match || 0);
+   const taxaConformidade = totalTransacoes > 0 ? Number(((totalMatch / totalTransacoes) * 100).toFixed(1)) : 0;
+
+   return {
+      kpis: {
+         volume_conciliado: Number(resumo.volume_conciliado || 0),
+         taxa_conformidade: taxaConformidade,
+         total_divergencias: Number(resumo.total_divergencias || 0),
+         impacto_divergente: Number(resumo.impacto_divergente || 0),
+         total_transacoes: totalTransacoes,
+         total_match: totalMatch 
+      },
+
+      distribuicao: {
+         MATCH_PERFEITO: totalMatch,
+         DIFERENCA_DATA: Number(resumo.qtd_dif_data || 0),
+         DOFERENCA_VALOR: Number(resumo.qtd_dif_valor || 0),
+         NAO_ENCOTRADO_NO_BANCO: Number(resumo.qtd_ausente_banco || 0),
+         NAO_ENCONTRADO_NO_SISTEMA: Number(resumo.qtd_ausente_sistema || 0)
+      },
+
+      evolucao_diaria: evolucaoRows.map(row => ({
+         data: row.data_label,
+         vendas: Number(row.total_vendas),
+         extrato: Number(row.total_extrato)
+      })),
+
+      maiores_divergencias: divergenciasRows
+   };
+};
+
+module.exports = { inserirVendas, inserirExtrato, inserirResultados, obterDadosDashboard };
