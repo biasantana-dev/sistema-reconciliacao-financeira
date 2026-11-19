@@ -6,7 +6,7 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const {Readable} = require('stream'); // módulo nativo do node
 const db = require('./src/config/db');
-const {inserirVendas, inserirExtrato, inserirResultados} = require('./src/services/dbService');
+const {inserirVendas, inserirExtrato, inserirResultados, obterDadosDashboard } = require('./src/services/dbService');
 const { executarReconciliacao } = require('./src/services/reconciliacaoService');
 
 // inicialização do app
@@ -111,6 +111,17 @@ app.post('/api/executar-reconciliacao', async (req, res) => {
    } catch (erro) {
       console.error(erro);
       res.status(500).json({ erro: 'Falha ao executar motor de reconciliação.'});
+   }
+});
+
+// rota get: dados consolidados no dashboard
+app.get('api/dashboard', async (req, res) => {
+   try {
+      const dados = await obterDadosDashboard();
+      res.status(200).json(dados);
+   } catch (erro) {
+      console.error('Erro ao buscar dados do dashboard:', erro);
+      res.status(500).json({ erro: 'Falha ao carregar indicadores do dashboard.' });
    }
 });
 
