@@ -56,28 +56,28 @@ const obterDadosDashboard = async () => {
          SUM(CASE WHEN r.tipo_resultado = 'MATCH_PERFEITO' THEN 1 ELSE 0 END) AS total_match,
          SUM(CASE WHEN r.tipo_resultado <> 'MATCH_PERFEITO' THEN 1 ELSE 0 END) AS total_divergencias, 
          COALESCE(SUM(CASE WHEN r.tipo_resultado = 'MATCH_PERFEITO' THEN e.valor_recebido ELSE 0 END), 0) AS volume_conciliado,
-         COASESCE(SUM(CASE WHEN r.tipo_resultado <> 'MATCH_PERFEITO' THEN ABS(r.valor_diferenca) ELSE 0 END), 0) AS impacto_divergente,
+         COALESCE(SUM(CASE WHEN r.tipo_resultado <> 'MATCH_PERFEITO' THEN ABS(r.valor_diferenca) ELSE 0 END), 0) AS impacto_divergente,
          SUM(CASE WHEN r.tipo_resultado = 'DIFERENCA_DATA' THEN 1 ELSE 0 END) AS qtd_dif_data,
          SUM(CASE WHEN r.tipo_resultado = 'DIFERENCA_VALOR' THEN 1 ELSE 0 END) AS    qtd_dif_valor,
          SUM(CASE WHEN r.tipo_resultado = 'NAO_ENCONTRADO_NO_BANCO' THEN 1 ELSE 0 END) AS qtd_ausente_banco,
          SUM(CASE WHEN r.tipo_resultado = 'NAO_ENCONTRADO_NO_SISTEMA' THEN 1 ELSE 0 END) AS qtd_ausente_sistema
       FROM resultado_reconciliacao r
-      LEFT JOIN extrato_bancario e ON r.id_extrato - e.id
+      LEFT JOIN extrato_bancario e ON r.id_extrato = e.id
    `);
 
    // evoluçao diaria: vendas vs extrato
    const [evolucaoRows] = await db.query(`
       SELECT 
          DATE_FORMAT(COALESCE(v.data_venda, e.data_compensacao), '%d/%m') AS data_label,
-         COALESCE(v.data_venda, e.data_compensacaoo) AS data_ordem,
+         COALESCE(v.data_venda, e.data_compensacao) AS data_ordem,
          COALESCE(SUM(v.valor_esperado), 0) AS total_vendas,
-         COALESCE(SUM(v.valor_recebido), 0) AS total_extrato
-      FROM resultados_reconciliacao r
+         COALESCE(SUM(e.valor_recebido), 0) AS total_extrato
+      FROM resultado_reconciliacao r
       LEFT JOIN vendas_sistema v ON r.id_venda = v.id
-      LEFT JOIN extrato_bancario e ON r.id_extrato - r.id
-      WHRERE COALESCE(v.data_venda, e.data_compensacao) IS NOT NULL
+      LEFT JOIN extrato_bancario e ON r.id_extrato = e.id
+      WHERE COALESCE(v.data_venda, e.data_compensacao) IS NOT NULL
       GROUP BY data_label, data_ordem
-      GROUP BY data_ordem ASC 
+      ORDER BY data_ordem ASC 
       LIMIT 10
    `);
 
@@ -91,7 +91,7 @@ const obterDadosDashboard = async () => {
          COALESCE(v.valor_esperado, 0) AS valor_esperado,
          COALESCE(e.valor_recebido, 0) AS valor_recebido,
          r.valor_diferenca
-      FROM resultado_reconcilicao r
+      FROM resultado_reconciliacao r
       LEFT JOIN vendas_sistema v ON r.id_venda = v.id
       LEFT JOIN extrato_bancario e ON r.id_extrato = e.id
       WHERE r.tipo_resultado <> 'MATCH_PERFEITO'
@@ -117,8 +117,8 @@ const obterDadosDashboard = async () => {
       distribuicao: {
          MATCH_PERFEITO: totalMatch,
          DIFERENCA_DATA: Number(resumo.qtd_dif_data || 0),
-         DOFERENCA_VALOR: Number(resumo.qtd_dif_valor || 0),
-         NAO_ENCOTRADO_NO_BANCO: Number(resumo.qtd_ausente_banco || 0),
+         DIFERENCA_VALOR: Number(resumo.qtd_dif_valor || 0),
+         NAO_ENCONTRADO_NO_BANCO: Number(resumo.qtd_ausente_banco || 0),
          NAO_ENCONTRADO_NO_SISTEMA: Number(resumo.qtd_ausente_sistema || 0)
       },
 

@@ -68,7 +68,7 @@ const executarReconciliacao = async () => {
             const mesmoValor = valorEsperado === valorRecebido;
 
             let tipoResultado = 'MATCH_PERFEITO';
-            valorDiferenca = 0.00;
+            let valorDiferenca = 0.00;
 
             if (mesmaData && !mesmoValor) {
                tipoResultado = 'DIFERENCA_VALOR';
@@ -123,7 +123,7 @@ const executarReconciliacao = async () => {
                codigo_transacao_banco: itemBanco.codigo_transacao_banco,
                data_venda: null,
                data_compensacao: itemBanco.data_compensacao,
-               valorEsperado: 0,
+               valor_esperado: 0,
                valor_recebido: valorRecebido
             });
          }
