@@ -115,7 +115,7 @@ app.post('/api/executar-reconciliacao', async (req, res) => {
 });
 
 // rota get: dados consolidados no dashboard
-app.get('api/dashboard', async (req, res) => {
+app.get('/api/dashboard', async (req, res) => {
    try {
       const dados = await obterDadosDashboard();
       res.status(200).json(dados);
