@@ -111,7 +111,7 @@ const obterDadosDashboard = async () => {
          total_divergencias: Number(resumo.total_divergencias || 0),
          impacto_divergente: Number(resumo.impacto_divergente || 0),
          total_transacoes: totalTransacoes,
-         total_match: totalMatch 
+         total_match: totalMatch
       },
 
       distribuicao: {
@@ -132,4 +132,84 @@ const obterDadosDashboard = async () => {
    };
 };
 
-module.exports = { inserirVendas, inserirExtrato, inserirResultados, obterDadosDashboard };
+// funcao pra relatórios 
+const obterDadosRelatorio = async () => {
+   // resumo agrupado por tipo de divergencia
+   const [resumoCategorias] = await db.query(`
+         SELECT   
+            r.tipo_resultado,
+            COUNT(*) AS quantidade,
+            COALESCE(SUM(v.valor_esperado), 0) AS total_esperado,
+            COALESCE(SUM(e.valor_recebido), 0) AS total_recebido,
+            COALESCE(SUM(r.valor_diferenca), 0) AS saldo_diferenca, 
+            COALESCE(SUM(ABS(r.valor_diferenca)), 0) AS impacto_absoluto
+         FROM resultado_reconciliacao r 
+         LEFT JOIN vendas_sistema v ON r.id_venda = v.id
+         LEFT JON extrato_bancario e ON r.id_extrato = e.id 
+         WHERE r.tipo_resultado <> 'MATCH_PERFEITO'
+         GROUP BY r.tipo_resultado
+         ORDER BY impacto_absoluto DESC 
+         
+      `);
+
+   // lista detalhada de todas as divergencias pra auditoria e exportaçao csv
+   const [divergenciasDetalhadas] = await db.query(`
+      SELECT 
+         r.id,
+         v.id_pedido,
+         DATE_FORMAT(v.data_venda, '%Y-%m-%d) AS data_venda,
+         e.codigo_transacao_banco,
+         DATE_FORMAT(e.data_compensacao, '%Y-%m-%d) AS data_compensacao,
+         r.tipo_resultado,
+         COALESCE(v.valor_esperado, 0) AS valor_esperado,
+         COASESCE(e.valor_recebido, 0) AS valor_recebido,
+         r.valor_diferenca
+      FROM resultado_reconciliacao r
+      LEFT JOIN vendas_sistema v ON r.id_vendas = v.id
+      LEFT JOIN extrato_bancario e ON r.id_extrato = e.id
+      WHERE r.tipo_resultado <> 'MATCH_PERFETIO'
+      ORDER BY ABS(r.valor_diferenca) DESC, r.id ASC
+   `);
+
+
+   // totais gerenciais de perdas (falta receber) vs sobras (não identificado)
+   let perdasApurar = 0; // valor esperado > recebido (ausente no banco + taxas/ dif valor)
+   let sobrasNaoIdentificadas = 0; // dinheiro no banco sem venda no sistema
+   let pendenciasPrazo = 0; // diferença só de data
+
+   for (const item of divergenciasDetalhadas) {
+      const dif = Number(item.valor_diferenca || 0);
+      if (item.tipo_resultado === 'DIFERENCA_DATA') {
+         pendenciasPrazo += Number(item.valor_esperado || 0);
+      } else if (dif > 0) {
+         perdasApurar += dif;
+      } else if (dif < 0) {
+         sobrasNaoIdentificadas += Math.abs(dif);
+      }
+   }
+
+   return {
+      resumo_gerencial: {
+         perdas_a_apurar: Number(perdasAPurar.toFixed(2)),
+         sobras_nao_identificadas: Number(sobrasNaoIdentificadas.toFixed(2)),
+         pendencias_prazo: Number(pendenciasPrazo.toFixed(2)),
+         total_itens_divergentes: divergenciasDetalhadas.length
+      },
+      categorias: resumoCategorias.map(cat => ({
+         tipo_resultado: cat.tipo_resultado,
+         quantidade: Number(cat.quantidade),
+         total_esperado: Number(cat.total_esperado),
+         total_recebido: Number(cat.total_recebido),
+         saldo_diferenca: Number(cat.saldo_diferenca),
+         impacto_absoluto: Number(cat.impacto_absoluto)
+      })),
+      itens: divergenciasDetalhadas.map(item => ({
+         ...item,
+         valor_esperado: Number(item.valor_esperado),
+         valor_recebido: Number(item.valor_recebido),
+         valor_diferenca: Number(item.valor_diferenca)
+      }))
+   };
+};
+
+module.exports = { inserirVendas, inserirExtrato, inserirResultados, obterDadosDashboard, obterDadosRelatorio };
