@@ -17,7 +17,7 @@
          <img src="img/logo-recon.png" class="sidebar-logo" alt="Logo Recon Reconciliação Financeira">
 
          <div class="nav-sidebar">
-            <a href="#"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24
+            <a href="#" data-view="upload" class="active"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24
 " fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                   class="lucide lucide-upload preview-icon">
                   <path d="M12 3v12" />
@@ -25,9 +25,9 @@
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                </svg> Upload</a>
 
-            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-layout-dashboard preview-icon">
+            <a href="#" data-view="dashboard"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="lucide lucide-layout-dashboard preview-icon">
                   <rect width="7" height="9" x="3" y="3" rx="1" />
                   <rect width="7" height="5" x="14" y="3" rx="1" />
                   <rect width="7" height="9" x="14" y="12" rx="1" />
@@ -61,249 +61,322 @@
                <p class="nome-usuario-sidebar"> Beatriz Santana</p>
                <p class="arroba-usuario-sidebar">@biasantana-dev</p>
             </div>
+         </div>
       </aside>
 
       <!-- conteudo principal -->
       <main class="main-conteudo">
-         <h1>Reconciliação de Arquivos</h1>
-         <p>Envie os arquivos para cruzamento automático.</p>
-
-
-         <div class="painel-reconciliacao">
-
-            <!-- barra de progresso -->
-            <div class="stepper-container">
-               <div class="step active">
-                  <span class="step-badge">1</span>
-                  <span class="step-label">Upload de Arquivos</span>
+         <section id="view-upload" class="view-section">
+            <h1>Reconciliação de Arquivos</h1>
+            <p>Envie os arquivos para cruzamento automático.</p>
+            <div class="painel-reconciliacao">
+               <!-- barra de progresso -->
+               <div class="stepper-container">
+                  <div class="step active">
+                     <span class="step-badge">1</span>
+                     <span class="step-label">Upload de Arquivos</span>
+                  </div>
+                  <div class="step">
+                     <span class="step-badge">2</span>
+                     <span class="step-label">Cruzamento de Dados</span>
+                  </div>
+                  <div class="step">
+                     <span class="step-badge">3</span>
+                     <span class="step-label">Resultados e Match</span>
+                  </div>
                </div>
-               <div class="step">
-                  <span class="step-badge">2</span>
-                  <span class="step-label">Cruzamento de Dados</span>
-               </div>
-               <div class="step">
-                  <span class="step-badge">3</span>
-                  <span class="step-label">Resultados e Match</span>
-               </div>
-            </div>
-
-            <!-- formulário com os dois cards de upload -->
-            <form id="formReconciliacao">
-
-               <div class="upload-box">
-
-                  <div class="upload-vendas">
-                     <label for="input-vendas">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                           class="file-icon-topo" id="icon-vendas">
-                           <path
-                              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
-                           <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-                           <path d="M8 13h2" />
-                           <path d="M14 13h2" />
-                           <path d="M8 17h2" />
-                           <path d="M14 17h2" />
-                        </svg>
-
-                        <!--****** VENDAS ******** -->
-                        <h2>Upload de Vendas</h2>
-                        <p class="descricao">Arraste e solte o arquivo de Vendas aqui ou clique para carregar</p>
-                        <input type="file" name="vendas" id="input-vendas" accept=".csv">
-                        <div class="file-status" id="status-vendas">
+               <!-- formulário com os dois cards de upload -->
+               <form id="formReconciliacao">
+                  <div class="upload-box">
+                     <div class="upload-vendas">
+                        <label for="input-vendas">
                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                              stroke-linejoin="round" class="file-icon-mini">
-                              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                              <polyline points="14 2 14 8 20 8" />
+                              stroke-linejoin="round" class="file-icon-topo" id="icon-vendas">
+                              <path
+                                 d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                              <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                              <path d="M8 13h2" />
+                              <path d="M14 13h2" />
+                              <path d="M8 17h2" />
+                              <path d="M14 17h2" />
                            </svg>
-
-                           <div class="file-details">
-                              <span class="file-name" id="nome-arq-vendas">Nenhum arquivo</span>
-                              <span class="file-size" id="tam-arq-vendas">-</span>
-                           </div>
-
-                           <div class="file-check">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                 <path d="M20 6 9 17l-5-5" />
+                           <!--****** VENDAS ******** -->
+                           <h2>Upload de Vendas</h2>
+                           <p class="descricao">Arraste e solte o arquivo de Vendas aqui ou clique para carregar</p>
+                           <input type="file" name="vendas" id="input-vendas" accept=".csv">
+                           <div class="file-status" id="status-vendas">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="file-icon-mini">
+                                 <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                 <polyline points="14 2 14 8 20 8" />
                               </svg>
+                              <div class="file-details">
+                                 <span class="file-name" id="nome-arq-vendas">Nenhum arquivo</span>
+                                 <span class="file-size" id="tam-arq-vendas">-</span>
+                              </div>
+                              <div class="file-check">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 6 9 17l-5-5" />
+                                 </svg>
+                              </div>
                            </div>
-                        </div>
-                        <p class="alerta-card">Apenas arquivos .csv</p>
-                     </label>
-                  </div>
-
-                  <!--****** EXTRATO ******** -->
-                  <div class="upload-extrato">
-                     <label for="input-extrato">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                           class="file-icon-topo" id="icon-extrato">
-                           <path d="M10 18v-7" />
-                           <path
-                              d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z" />
-                           <path d="M14 18v-7" />
-                           <path d="M18 18v-7" />
-                           <path d="M3 22h18" />
-                           <path d="M6 18v-7" />
-                        </svg>
-
-                        <h2>Upload de Extrato</h2>
-                        <p class="descricao">Arraste e solte o arquivo de Extrato aqui ou clique para carregar</p>
-                        <input type="file" name="extrato" id="input-extrato" accept=".csv">
-                        <div class="file-status" id="status-extrato">
+                           <p class="alerta-card">Apenas arquivos .csv</p>
+                        </label>
+                     </div>
+                     <!--****** EXTRATO ******** -->
+                     <div class="upload-extrato">
+                        <label for="input-extrato">
                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                              stroke-linejoin="round" class="file-icon-mini">
-                              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                              <polyline points="14 2 14 8 20 8" />
+                              stroke-linejoin="round" class="file-icon-topo" id="icon-extrato">
+                              <path d="M10 18v-7" />
+                              <path
+                                 d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z" />
+                              <path d="M14 18v-7" />
+                              <path d="M18 18v-7" />
+                              <path d="M3 22h18" />
+                              <path d="M6 18v-7" />
                            </svg>
-
-                           <div class="file-details">
-                              <span class="file-name" id="nome-arq-extrato">Nenhum arquivo</span>
-                              <span class="file-size" id="tam-arq-extrato">-</span>
-                           </div>
-
-                           <div class="file-check">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                 <path d="M20 6 9 17l-5-5" />
+                           <h2>Upload de Extrato</h2>
+                           <p class="descricao">Arraste e solte o arquivo de Extrato aqui ou clique para carregar</p>
+                           <input type="file" name="extrato" id="input-extrato" accept=".csv">
+                           <div class="file-status" id="status-extrato">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="file-icon-mini">
+                                 <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                 <polyline points="14 2 14 8 20 8" />
                               </svg>
+                              <div class="file-details">
+                                 <span class="file-name" id="nome-arq-extrato">Nenhum arquivo</span>
+                                 <span class="file-size" id="tam-arq-extrato">-</span>
+                              </div>
+                              <div class="file-check">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 6 9 17l-5-5" />
+                                 </svg>
+                              </div>
                            </div>
-
+                           <p class="alerta-card">Apenas arquivos .csv</p>
+                        </label>
+                     </div>
+                  </div>
+                  <div class="form-footer">
+                     <div class="requisitos-validacao">
+                        <p>Requisitos de validação:</p>
+                        <ul>
+                           <li id="req-formato"><span class="icone-check">✓</span> formato .csv</li>
+                           <li id="req-colunas"><span class="icone-check">✓</span> colunas obrigatórias detectadas</li>
+                        </ul>
+                     </div>
+                     <button type="submit" class="btn-executar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                           class="lucide lucide-database-zap">
+                           <ellipse cx="12" cy="5" rx="9" ry="3" />
+                           <path d="M3 5V19A9 3 0 0 0 15 21.84" />
+                           <path d="M21 5V8" />
+                           <path d="M21 12L18 17H22L19 22" />
+                        </svg>
+                        Executar Reconciliação</button>
+                  </div>
+               </form>
+               <!-- etapa 2 - processamento -->
+               <div id="etapa-processando" class="oculto">
+                  <div class="recon-loader" aria-hidden="true">
+                     <span class="elo elo-vendas"></span>
+                     <span class="elo elo-extrato"></span>
+                  </div>
+                  <h2>Cruzando transações...</h2>
+                  <p>Comparando os registros de vendas com os lançamentos do extrato bancário.</p>
+                  <div class="etapas-processamento">
+                     <div class="proc-item passo-1">
+                        <span>Lendo e validando estrutura dos arquivos CSV</span>
+                     </div>
+                     <div class="proc-item passo-2">
+                        <span>Normalizando datas e valores monetários</span>
+                     </div>
+                     <div class="proc-item passo-3">
+                        <span>Identificando matches e divergências</span>
+                     </div>
+                  </div>
+               </div>
+               <!-- etapa 3 - resultados e match -->
+               <div id="etapa-resultados" class="oculto">
+                  <div class="metricas-strip">
+                     <div class="metrica-item">
+                        <span class="metrica-label">Total Reconciliado</span>
+                        <strong class="metrica-valor" id="kpi-total">R$ 0,00</strong>
+                        <span class="metrica-caption" id="kpi-total-sub">Volume financeiro validado</span>
+                     </div>
+                     <div class="metrica-item">
+                        <span class="metrica-label">Divergências</span>
+                        <strong class="metrica-valor" id="kpi-divergencias">0</strong>
+                        <span class="metrica-caption" id="kpi-div-sub">Nenhuma inconsistência</span>
+                     </div>
+                     <div class="metrica-item">
+                        <span class="metrica-label">Taxa de Conformidade</span>
+                        <strong class="metrica-valor sucesso" id="kpi-taxa">0%</strong>
+                        <span class="metrica-caption" id="kpi-taxa-sub">Índice de match</span>
+                     </div>
+                  </div>
+                  <!-- seção da tabela -->
+                  <div class="secao-tabela">
+                     <div class="tabela-topo">
+                        <div class="tabela-titulo-grupo">
+                           <h3>Transações Analisadas</h3>
+                           <span class="contador-registros" id="contador-registros">0 registros</span>
                         </div>
-                        <p class="alerta-card">Apenas arquivos .csv</p>
-                     </label>
+                        <div class="filtros-tabela" id="filtros-tabela">
+                           <button type="button" class="filtro-pill active" data-filtro="TODOS">Todos</button>
+                           <button type="button" class="filtro-pill" data-filtro="DIVERGENCIAS">Divergências</button>
+                           <button type="button" class="filtro-pill" data-filtro="MATCH">Conciliados</button>
+                        </div>
+                     </div>
+                     <div class="tabela-wrapper">
+                        <table class="tabela-resultados">
+                           <thead>
+                              <tr>
+                                 <th>Transação</th>
+                                 <th>Data Venda</th>
+                                 <th>Data Extrato</th>
+                                 <th>Esperado</th>
+                                 <th>Recebido</th>
+                                 <th class="col-status">Status</th>
+                              </tr>
+                           </thead>
+                           <tbody id="tabela-resultado-body">
+                           </tbody>
+                        </table>
+                     </div>
                   </div>
-               </div>
-
-               <div class="form-footer">
-                  <div class="requisitos-validacao">
-                     <p>Requisitos de validação:</p>
-                     <ul>
-                        <li id="req-formato"><span class="icone-check">✓</span> formato .csv</li>
-                        <li id="req-colunas"><span class="icone-check">✓</span> colunas obrigatórias detectadas</li>
-                     </ul>
-                  </div>
-
-                  <button type="submit" class="btn-executar">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="lucide lucide-database-zap">
-                        <ellipse cx="12" cy="5" rx="9" ry="3" />
-                        <path d="M3 5V19A9 3 0 0 0 15 21.84" />
-                        <path d="M21 5V8" />
-                        <path d="M21 12L18 17H22L19 22" />
-                     </svg>
-                     Executar Reconciliação</button>
-               </div>
-            </form>
-
-            <!-- etapa 2 - processamento -->
-            <div id="etapa-processando" class="oculto">
-               <div class="recon-loader" aria-hidden="true">
-                  <span class="elo elo-vendas"></span>
-                  <span class="elo elo-extrato"></span>
-               </div>
-
-               <h2>Cruzando transações...</h2>
-               <p>Comparando os registros de vendas com os lançamentos do extrato bancário.</p>
-
-               <div class="etapas-processamento">
-                  <div class="proc-item passo-1">
-                     <span>Lendo e validando estrutura dos arquivos CSV</span>
-                  </div>
-                  <div class="proc-item passo-2">
-                     <span>Normalizando datas e valores monetários</span>
-                  </div>
-                  <div class="proc-item passo-3">
-                     <span>Identificando matches e divergências</span>
+                  <!-- rodapé -->
+                  <div class="acoes-resultados">
+                     <span class="info-rodape">Salvo automaticamente no histórico</span>
+                     <button type="button" id="btn-nova-reconciliacao" class="btn-secundario">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                           <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                           <path d="M3 3v5h5" />
+                        </svg>
+                        Nova Reconciliação
+                     </button>
                   </div>
                </div>
             </div>
+         </section>
 
-            <!-- etapa 3 - resultados e match -->
-            <div id="etapa-resultados" class="oculto">
+         <section id="view-dashboard" class="view-section ">
+            <div class="dashboard-header">
 
-
-               <div class="metricas-strip">
-                  <div class="metrica-item">
-                     <span class="metrica-label">Total Reconciliado</span>
-                     <strong class="metrica-valor" id="kpi-total">R$ 0,00</strong>
-                     <span class="metrica-caption" id="kpi-total-sub">Volume financeiro validado</span>
-                  </div>
-
-                  <div class="metrica-item">
-                     <span class="metrica-label">Divergências</span>
-                     <strong class="metrica-valor" id="kpi-divergencias">0</strong>
-                     <span class="metrica-caption" id="kpi-div-sub">Nenhuma inconsistência</span>
-                  </div>
-
-                  <div class="metrica-item">
-                     <span class="metrica-label">Taxa de Conformidade</span>
-                     <strong class="metrica-valor sucesso" id="kpi-taxa">0%</strong>
-                     <span class="metrica-caption" id="kpi-taxa-sub">Índice de match</span>
-                  </div>
+               <div>
+                  <h1>Dashboard Executivo</h1>
+                  <p>Visão consolidada das conciliações financeiras registradas no sistema.</p>
                </div>
 
-               <!-- seção da tabela -->
-               <div class="secao-tabela">
-                  <div class="tabela-topo">
-                     <div class="tabela-titulo-grupo">
-                        <h3>Transações Analisadas</h3>
-                        <span class="contador-registros" id="contador-registros">0 registros</span>
-                     </div>
-
-                     <div class="filtros-tabela" id="filtros-tabela">
-                        <button type="button" class="filtro-pill active" data-filtro="TODOS">Todos</button>
-                        <button type="button" class="filtro-pill" data-filtro="DIVERGENCIAS">Divergências</button>
-                        <button type="button" class="filtro-pill" data-filtro="MATCH">Conciliados</button>
-                     </div>
-                  </div>
-
-                  <div class="tabela-wrapper">
-                     <table class="tabela-resultados">
-                        <thead>
-                           <tr>
-                              <th>Transação</th>
-                              <th>Data Venda</th>
-                              <th>Data Extrato</th>
-                              <th>Esperado</th>
-                              <th>Recebido</th>
-                              <th class="col-status">Status</th>
-                           </tr>
-                        </thead>
-
-                        <tbody id="tabela-resultado-body">
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-
-               <!-- rodapé -->
-               <div class="acoes-resultados">
-                  <span class="info-rodape">Salvo automaticamente no histórico</span>
-                  <button type="button" id="btn-nova-reconciliacao" class="btn-secundario">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                        <path d="M3 3v5h5" />
-                     </svg>
-                     Nova Reconciliação
-                  </button>
-               </div>
+               <button type="button" id="btn-atualizar-dashboard" class="btn-secundario">
+                  Atualizar Dados
+               </button>
             </div>
-         </div>
 
+            <!-- grid de 4 KPIs -->
+            <div class="dash-kpis-grid">
+               <article class="dash-card kpi-card">
+                  <span class="dash-label">VOLUME CONCILIADO</span>
+                  <strong class="dash-valor verde" id="dash-kpi-volume">R$ 0,00</strong>
+                  <span class="dash-sub" id="dash-kpi-volume-sub">0 transações validadas</span>
+               </article>
+
+               <article class="dash-card kpi-card">
+                  <span class="dash-label">TAXA DE CONFORMIDADE</span>
+                  <strong class="dash-valor indigo" id="dash-kpi-taxa">0.0%</strong>
+                  <span class="dash-sub">Percentual de match perfeito</span>
+               </article>
+
+               <article class="dash-card kpi-card">
+                  <span class="dash-label">DIVERGÊNCIAS ABERTAS</span>
+                  <strong class="dash-valor alerta" id="dash-kpi-divergencias">0</strong>
+                  <span class="dash-sub">Inconsistências detectadas</span>
+               </article>
+
+               <article class="dash-card kpi-card">
+                  <span class="dash-label">IMPACTO FINANCEIRO</span>
+                  <strong class="dash-valor aviso" id="dash-kpi-impacto">R$ 0,00</strong>
+                  <span class="dash-sub">Soma absoluta das diferenças</span>
+               </article>
+            </div>
+
+            <!-- grid de graficos (1.45fr + 1fr) -->
+            <div class="dash-charts-grid">
+               <article class="dash-card chart-card">
+                  <div class="chart-header">
+                     <div>
+                        <h3>Vendas vs. Extrato Bancário</h3>
+                        <span class="dash-sub">Comparativo diário de valores esperados e compensados</span>
+                     </div>
+
+                     <div class="chart-legenda">
+                        <span><i class="legenda-dot indigo"></i>Sistema</span>
+                        <span><i class="legenda-dot verde"></i>Banco</span>
+                     </div>
+                  </div>
+
+                  <div class="canvas-wrapper">
+                     <canvas id="grafico-evolucao"></canvas>
+                  </div>
+               </article>
+
+               <article class="dash-card chart-card">
+                  <div class="chart-header">
+                     <div>
+                        <h3>Distribuição de Status</h3>
+                        <span class="dash-sub">Proporção por categoria de cruzamento</span>
+                     </div>
+                  </div>
+
+                  <div class="canvas-wrapper">
+                     <canvas id="grafico-status"></canvas>
+                  </div>
+               </article>
+            </div>
+
+            <!-- tabela de divergencias criticas -->
+            <article class="dash-card dash-tabela-card">
+               <div class="chart-header">
+                  <div>
+                     <h3>Maiores Divergências Financeiras</h3>
+                     <span class="dash-sub">Top 5 ocorrências com maior impacto monetário para auditoria</span>
+                  </div>
+               </div>
+
+               <div class="tabela-scroll-dash">
+                  <table class="tabela-resultados">
+                     <thead>
+                        <tr>
+                           <th>TRANSAÇÃO</th>
+                           <th>TIPO DE OCORRÊNCIA</th>
+                           <th class="col-numero">ESPERADO</th>
+                           <th class="col-numero">RECEBIDO</th>
+                           <th class="col-numero">DIFERENÇA</th>
+                        </tr>
+                     </thead>
+
+                     <tbody id="dash-tabela-divergencias"></tbody>
+                  </table>
+               </div>
+            </article>
+         </section>
+      </main>
    </div>
-   </main>
-   </div>
 
-
-   <script src="app.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script type="module" src="app.js"></script>
 </body>
 
 </html>
