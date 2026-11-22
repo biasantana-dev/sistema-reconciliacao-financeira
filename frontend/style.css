@@ -85,18 +85,13 @@ body {
    color: var(--cor-texto);
 }
 
-.nav-sidebar a:hover svg {
-   color: #8D96EC;
-}
-
-/* deixar o upload como ativo por padrao */
-.nav-sidebar a:first-child {
+.nav-sidebar a.active {
    background-color: rgba(107, 117, 219, 0.16);
    color: var(--cor-texto);
    font-weight: 600;
 }
 
-.nav-sidebar a:first-child svg {
+.nav-sidebar a.active svg {
    color: #8D96EC;
 }
 
@@ -154,7 +149,7 @@ body {
    margin-bottom: 6px;
 }
 
-.main-conteudo>p {
+#view-upload > p {
    color: var(--cor-texto-secundaria);
    margin-bottom: 30px;
    font-size: 0.9em;
@@ -399,23 +394,41 @@ input[type="file"] {
 
 /* botao executar */
 .btn-executar {
-   background: var(--cor-acao);
-   color: #fff;
+   background-color: #252B3B;
+   color: var(--cor-texto-secundaria);
    font-weight: 600;
-   font-size: 0.92em;
-   padding: 12px 24px;
-   border: none;
-   border-radius: 10px;
+   font-size: 0.88em;
+   letter-spacing: -0.1px;
+   padding: 11px 22px;
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   border-radius: 9px;
    cursor: pointer;
-   display: flex;
+   display: inline-flex;
    align-items: center;
    justify-content: center;
-   gap: 10px;
-   transition: all 0.2s ease;
+   gap: 9px;
+   transition: all 0.25s ease;
 }
 
-.btn-executar:hover {
-   background-color: var(--cor-acao-hover);
+.btn-executar svg {
+   color: #8D96EC;
+   transition: color 0.25s ease, transform 0.2s ease;
+}
+
+.btn-executar.pronto {
+   background-color: var(--cor-card1);
+   color: #131722;
+   font-weight: 700;
+   border-color: transparent;
+   box-shadow: 0 4px 14px rgba(107, 117, 219, 0.28);
+}
+
+.btn-executar.pronto svg {
+   color: #131722;
+}
+
+.btn-executar.pronto:hover:not(:disabled) {
+   background-color: #7D87E8;
    transform: translateY(-1px);
 }
 
@@ -925,21 +938,21 @@ input[type="file"] {
 }
 
 /* barra de rolagem */
-.tabela-wrapper::-webkit-scrollbar {
+.tabela-wrapper::-webkit-scrollbar, .tabela-scroll-dash::-webkit-scrollbar {
    width: 6px;
    height: 6px;
 }
 
-.tabela-wrapper::-webkit-scrollbar-track {
+.tabela-wrapper::-webkit-scrollbar-track, .tabela-scroll-dash::-webkit-scrollbar {
    background: transparent;
 }
 
-.tabela-wrapper::-webkit-scrollbar-thumb {
+.tabela-wrapper::-webkit-scrollbar-thumb, .tabela-scroll-dash::-webkit-scrollbar {
    background-color: rgba(255, 255, 255, 0.14);
    border-radius: 999px;
 }
 
-.tabela-wrapper::-webkit-scrollbar-thumb:hover {
+.tabela-wrapper::-webkit-scrollbar-thumb:hover, .tabela-scroll-dash::-webkit-scrollbar {
    background-color: rgba(255, 255, 255, 0.28);
 }
 
@@ -1140,7 +1153,7 @@ input[type="file"] {
 .dashboard-header {
    display: flex;
    justify-content: space-between;
-   align-items: flex-start;
+   align-items: center;
    margin-bottom: 24px;
 }
 
@@ -1158,21 +1171,44 @@ input[type="file"] {
    opacity: 0.75;
 }
 
-.btn-secundario {
-   background-color: var(--cor-secundaria);
+.btn-acao-topo {
+   display: inline-flex;
+   align-items: center;
+   gap: 8px;
+   background-color: #252B3B;
    color: var(--cor-texto);
-   border: 1px solid var(--cor-border);
-   padding: 9px 16px;
-   border-radius: 8px;
+   border: 1px solid rgba(107, 117, 219, 0.35);
+   padding: 10px 18px;
+   border-radius: 10px;
    font-size: 0.85em;
-   font-weight: 500;
+   font-weight: 600;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
    cursor: pointer;
    transition: all 0.2s ease;
 }
 
-.btn-secundario:hover {
-   border-color: #6b75bb;
-   background-color: rgba(107, 117, 219, 0.1);
+.btn-acao-topo:hover {
+   background-color: rgba(255, 255, 255, 0.05);
+   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-acao-topo svg {
+   color: #8D96EC;
+   transition: transform 0.35s ease;
+}
+
+.btn-acao-topo:hover {
+   background-color: rgba(107, 117, 219, 0.16);
+   border-color: #6B75DB;
+   transform: translateY(-1px);
+}
+
+.btn-acao-topo:hover .icon-refresh {
+   transform: rotate(180deg);
+}
+
+.btn-acao-topo:active {
+   transform: translateY(0);
 }
 
 /* cards base do dashboard */
@@ -1264,7 +1300,7 @@ input[type="file"] {
    margin-right: 6px;
 }
 
-.lengeda-dot.indigo {
+.legenda-dot.indigo {
    background-color: #6B75DB;
 }
 

@@ -1,3 +1,6 @@
+// importando o arquivo de dashboard 
+import { carregarDashboard } from "./ui/dashboard.js";
+
 document.addEventListener('DOMContentLoaded', () => {
    // selecão dos elementos do DOM
    const form = document.querySelector('#formReconciliacao');
@@ -107,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
          requisitosValidacao[1].classList.remove('requisitos-ok');
       }
+
+      const tudoPronto = vendasValido && extratoValido && requisitosValidacao[1].classList.contains('requisitos-ok');
+      btnExecutar.classList.toggle('pronto', Boolean(tudoPronto));
    }
 
    // função pra configurar drag e drop 
@@ -425,4 +431,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       irParaEtapa(1);
    });
+
+   // navegação entre upload e dashboard na sidebar
+   document.querySelectorAll('.nav-sidebar a[data-view]').forEach(link => {
+      link.addEventListener('click', e => {
+         e.preventDefault();
+         const viewAlvo = link.dataset.view;
+
+         document.querySelectorAll('.nav-sidebar a').forEach(a => a.classList.remove('active'));
+         link.classList.add('active');
+
+         document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('oculto'));
+         document.querySelector(`#view-${viewAlvo}`).classList.remove('oculto');
+
+         if (viewAlvo === 'dashboard') carregarDashboard();
+      });
+   });
+
+   // botao e atualizar o dashboard
+   document.querySelector('#btn-atualizar-dashboard')?.addEventListener('click', carregarDashboard);
 });
