@@ -36,9 +36,9 @@
                </svg> Dashboard</a>
 
 
-            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-file-chart-column preview-icon">
+            <a href="#" data-view="relatorios"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="lucide lucide-file-chart-column preview-icon">
                   <path
                      d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
                   <path d="M14 2v5a1 1 0 0 0 1 1h5" />
@@ -47,9 +47,9 @@
                   <path d="M16 18v-3" />
                </svg> Relatórios</a>
 
-            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-rotate-ccw-clock preview-icon">
+            <a href="#" data-view="historico"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="22"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="lucide lucide-rotate-ccw-clock preview-icon">
                   <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                   <path d="M3 3v5h5" />
                   <path d="M12 7v5l4 2" />
@@ -389,7 +389,7 @@
             <header class="dashboard-header">
                <div>
                   <h1>Relatórios Gerenciais</h1>
-                  <p>Consolidação de perdas financeiras, pendências operacionais e exportação</p>
+                  <p>Consolidação de perdas financeiras, pendências operacionais e exportação para auditoria.</p>
                </div>
 
                <div class="relatorio-acoes-topo">
@@ -417,27 +417,126 @@
                </div>
             </header>
 
-            <!-- 3 kpis gerenciais de perdas e pendências -->
+            <!-- 3 KPIs gerenciais usando os mesmos cards do Dashboard -->
             <div class="relatorio-kpis-grid">
-               <div class="kpi-card">
-                  <span class="kpi-label">PERDAS A APURAR (A RECEBER)</span>
-                  <strong id="rel-kpi-perdas" class="kpi-valor cor-alerta">R$ 0,00</strong>
-                  <span class="kpi-sub">Vendas ausentes no banco + diferenças de taxa</span>
-               </div>
+               <article class="dash-card kpi-card">
+                  <span class="dash-label">PERDAS A APURAR (A RECEBER)</span>
+                  <strong class="dash-valor alerta" id="rel-kpi-perdas">R$ 0,00</strong>
+                  <span class="dash-sub">Vendas ausentes no banco + diferenças de taxa</span>
+               </article>
 
-               <div class="kpi-card">
-                  <span class="kpi-label">SOBRAS NÃO IDENTIFICADAS</span>
-                  <strong id="rel-kpi-sobras" class="kpi-valor cor-indigo">R$ 0,00</strong>
-                  <span class="kpi-sub">Créditos no extrato sem pedido vinculado</span>
-               </div>
+               <article class="dash-card kpi-card">
+                  <span class="dash-label">SOBRAS NÃO IDENTIFICADAS</span>
+                  <strong class="dash-valor indigo" id="rel-kpi-sobras">R$ 0,00</strong>
+                  <span class="dash-sub">Créditos no extrato sem pedido vinculado</span>
+               </article>
 
-               <div class="kpi-card">
-                  <span class="kpi-label">PENDÊNCIAS DE COMPENSAÇÃO</span>
-                  <strong id="rel-kpi-prazo" class="kpi-valor cor-aviso">R$ 0,00</strong>
-                  <span class="kpi-sub">Valores batidos com divergência de data (D+N)</span>
-               </div>
+               <article class="dash-card kpi-card">
+                  <span class="dash-label">PENDÊNCIAS DE COMPENSAÇÃO</span>
+                  <strong class="dash-valor aviso" id="rel-kpi-prazo">R$ 0,00</strong>
+                  <span class="dash-sub">Valores batidos com divergência de data (D+N)</span>
+               </article>
             </div>
 
+            <!-- resumo consolidado por categoria -->
+            <article class="dash-card relatorio-bloco">
+               <div class="chart-header">
+                  <div>
+                     <h3>Resumo por Categoria de Inconsistência</h3>
+                     <span class="dash-sub">Distribuição financeira consolidada por regra de negócio</span>
+                  </div>
+               </div>
+
+               <div class="tabela-wrapper">
+                  <table class="tabela-resultados">
+                     <thead>
+                        <tr>
+                           <th>CATEGORIA</th>
+                           <th>OCORRÊNCIAS</th>
+                           <th class="col-numero">VALOR ESPERADO</th>
+                           <th class="col-numero">VALOR RECEBIDO</th>
+                           <th class="col-numero">IMPACTO LÍQUIDO</th>
+                        </tr>
+                     </thead>
+                     <tbody id="tbody-relatorio-categorias">
+                        <tr>
+                           <td class="texto-vazio" colspan="5">Carregando resumo gerencial...</td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </article>
+
+            <!-- tabela de divergências filtrável + exportação -->
+            <article class="dash-card relatorio-bloco">
+               <div class="chart-header relatorio-filtro-header">
+                  <div>
+                     <h3>Detalhamento para Revisão Manual</h3>
+                     <span class="dash-sub" id="rel-contador-itens">Exibindo 0 ocorrências divergentes</span>
+                  </div>
+
+                  <div class="filtro-grupo">
+                     <span>Filtrar por status:</span>
+
+                     <div class="dropdown-custom" id="dropdown-filtro-relatorio">
+                        <input type="hidden" id="filtro-tipo-relatorio" value="TODOS">
+
+                        <button type="button" class="dropdown-trigger" id="btn-dropdown-relatorio"
+                           aria-expanded="false">
+                           <span id="texto-dropdown-relatorio">Todas as divergências</span>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round" class="dropdown-seta">
+                              <path d="m6 9 6 6 6-6" />
+                           </svg>
+                        </button>
+
+                        <ul class="dropdown-menu oculto" id="menu-dropdown-relatorio" role="listbox">
+                           <li class="dropdown-item active" data-value="TODOS">
+                              <span class="dropdown-dot neutro"></span>
+                              Todas as divergências
+                           </li>
+                           <li class="dropdown-item" data-value="NAO_ENCONTRADO_NO_BANCO">
+                              <span class="dropdown-dot alerta"></span>
+                              Ausente no Banco
+                           </li>
+                           <li class="dropdown-item" data-value="NAO_ENCONTRADO_NO_SISTEMA">
+                              <span class="dropdown-dot aviso"></span>
+                              Ausente no Sistema
+                           </li>
+                           <li class="dropdown-item" data-value="DIFERENCA_VALOR">
+                              <span class="dropdown-dot alerta"></span>
+                              Diferença de Valor
+                           </li>
+                           <li class="dropdown-item" data-value="DIFERENCA_DATA">
+                              <span class="dropdown-dot aviso"></span>
+                              Diferença de Data
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="tabela-wrapper tabela-scroll-relatorio">
+                  <table class="tabela-resultados">
+                     <thead>
+                        <tr>
+                           <th>PEDIDO / TRANSAÇÃO</th>
+                           <th>DATAS (VENDA / BANCO)</th>
+                           <th>OCORRÊNCIA</th>
+                           <th class="col-numero">ESPERADO</th>
+                           <th class="col-numero">RECEBIDO</th>
+                           <th class="col-numero">DIFERENÇA</th>
+                        </tr>
+                     </thead>
+                     <tbody id="tbody-relatorio-itens">
+                        <tr>
+                           <td class="texto-vazio" colspan="6">Nenhuma divergência encontrada.</td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </article>
          </section>
       </main>
    </div>
