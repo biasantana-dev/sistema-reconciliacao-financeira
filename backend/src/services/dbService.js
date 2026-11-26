@@ -145,7 +145,7 @@ const obterDadosRelatorio = async () => {
             COALESCE(SUM(ABS(r.valor_diferenca)), 0) AS impacto_absoluto
          FROM resultado_reconciliacao r 
          LEFT JOIN vendas_sistema v ON r.id_venda = v.id
-         LEFT JON extrato_bancario e ON r.id_extrato = e.id 
+         LEFT JOIN extrato_bancario e ON r.id_extrato = e.id 
          WHERE r.tipo_resultado <> 'MATCH_PERFEITO'
          GROUP BY r.tipo_resultado
          ORDER BY impacto_absoluto DESC 
@@ -157,17 +157,17 @@ const obterDadosRelatorio = async () => {
       SELECT 
          r.id,
          v.id_pedido,
-         DATE_FORMAT(v.data_venda, '%Y-%m-%d) AS data_venda,
+         DATE_FORMAT(v.data_venda, '%Y-%m-%d') AS data_venda,
          e.codigo_transacao_banco,
-         DATE_FORMAT(e.data_compensacao, '%Y-%m-%d) AS data_compensacao,
+         DATE_FORMAT(e.data_compensacao, '%Y-%m-%d') AS data_compensacao,
          r.tipo_resultado,
          COALESCE(v.valor_esperado, 0) AS valor_esperado,
-         COASESCE(e.valor_recebido, 0) AS valor_recebido,
+         COALESCE(e.valor_recebido, 0) AS valor_recebido,
          r.valor_diferenca
       FROM resultado_reconciliacao r
-      LEFT JOIN vendas_sistema v ON r.id_vendas = v.id
+      LEFT JOIN vendas_sistema v ON r.id_venda = v.id
       LEFT JOIN extrato_bancario e ON r.id_extrato = e.id
-      WHERE r.tipo_resultado <> 'MATCH_PERFETIO'
+      WHERE r.tipo_resultado <> 'MATCH_PERFEITO'
       ORDER BY ABS(r.valor_diferenca) DESC, r.id ASC
    `);
 
@@ -190,7 +190,7 @@ const obterDadosRelatorio = async () => {
 
    return {
       resumo_gerencial: {
-         perdas_a_apurar: Number(perdasAPurar.toFixed(2)),
+         perdas_a_apurar: Number(perdasApurar.toFixed(2)),
          sobras_nao_identificadas: Number(sobrasNaoIdentificadas.toFixed(2)),
          pendencias_prazo: Number(pendenciasPrazo.toFixed(2)),
          total_itens_divergentes: divergenciasDetalhadas.length

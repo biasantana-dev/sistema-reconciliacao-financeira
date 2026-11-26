@@ -126,7 +126,7 @@ app.get('/api/dashboard', async (req, res) => {
 });
 
 // rota get: relatório gerencial de perdas, pendencias e divergencias
-app.get('api/relatorios', async (req, res) => {
+app.get('/api/relatorios', async (req, res) => {
    try {
       const relatorio = await obterDadosRelatorio();
       res.status(200).json(relatorio);
