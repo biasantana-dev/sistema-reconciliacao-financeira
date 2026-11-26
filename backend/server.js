@@ -6,7 +6,7 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const {Readable} = require('stream'); // módulo nativo do node
 const db = require('./src/config/db');
-const {inserirVendas, inserirExtrato, inserirResultados, obterDadosDashboard } = require('./src/services/dbService');
+const {inserirVendas, inserirExtrato, inserirResultados, obterDadosDashboard, obterDadosRelatorio } = require('./src/services/dbService');
 const { executarReconciliacao } = require('./src/services/reconciliacaoService');
 
 // inicialização do app
@@ -122,6 +122,17 @@ app.get('/api/dashboard', async (req, res) => {
    } catch (erro) {
       console.error('Erro ao buscar dados do dashboard:', erro);
       res.status(500).json({ erro: 'Falha ao carregar indicadores do dashboard.' });
+   }
+});
+
+// rota get: relatório gerencial de perdas, pendencias e divergencias
+app.get('/api/relatorios', async (req, res) => {
+   try {
+      const relatorio = await obterDadosRelatorio();
+      res.status(200).json(relatorio);
+   } catch (erro) {
+      console.error('Erro ao gerar relatório gerencial:', erro);
+      res.status(500).json({ erro: 'Falha ao carregar relatório gerencial.'});
    }
 });
 
